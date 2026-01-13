@@ -90,7 +90,7 @@ def get_temperature_spectrum(Temp_Ca):
 
 def get_doppler_broadened_spectrum_complete(Temp_Ca):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
-    # complete D_2 line
+    # complete absorption line
     
     temp_spectrum = get_temperature_spectrum(Temp_Ca)
     combined_spectrum = get_combined_absorption_line()
@@ -335,4 +335,5 @@ def get_wind_and_temp_errors(Temp_Ca, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
 
     return res_sat, res_no_sat, Ps
+
 
