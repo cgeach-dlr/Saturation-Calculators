@@ -7,7 +7,6 @@ import calcium_plus_saturation_calculator_library as ca_plus_lib
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
 import matplotlib
 
 font = {'weight' : 'normal',
@@ -20,8 +19,8 @@ lamb0 =  422.792 * 10**-9 #m, in vacuum
 nu0 = c_light / lamb0
 
 #Designate an output location for figure data and plots
-outpath_data = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Fig_data/temp/'
-outpath_figs = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Figs/temp/'
+outpath_data = ''
+outpath_figs = ''
 
 #Calculates the spectra of the degree of saturation for Figures 1 and 3
       
@@ -213,5 +212,6 @@ plt.ylabel('Temperature bias (K)')
 plt.xlabel('Pulse energy (mJ)')
 
 plt.grid(True)
+
 
 plt.savefig(os.path.join(outpath_figs, 'Ca_and_ca_plus4.jpg'), dpi=300)
