@@ -14,8 +14,8 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath_data = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Fig_data/temp/'
-outpath_figs = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Figs/temp/'
+outpath_data = ''
+outpath_figs = ''
 
 #Calculates the spectrum of the degree of saturation.
 
@@ -117,3 +117,4 @@ He_temp_and_wind_biases_data = np.vstack((Es, 100*dens_err_200, T_err_200,
                                           w_err_200))
 np.savetxt(os.path.join(outpath_data, 'He_temp_and_wind_biases.txt'),
            He_temp_and_wind_biases_data.T, delimiter=',')
+
