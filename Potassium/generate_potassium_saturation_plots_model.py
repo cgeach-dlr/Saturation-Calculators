@@ -18,8 +18,8 @@ lamb0 =  770.10835 * 10**-9 #m, in vacuum
 nu0 = c_light / lamb0
 
 #Designate an output location for figure data and plots
-outpath_data = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Fig_data/temp/'
-outpath_figs = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Figs/temp/'
+outpath_data = ''
+outpath_figs = ''
 
 #Calculates the intrinsic and effective spectra of the resonance lines. 
 delta_nu = 1e6
@@ -272,4 +272,5 @@ np.savetxt(os.path.join(outpath_data, 'K_temp_and_wind_biases_c.txt'),
 
 Data_K_measurements_d = np.vstack((Es, w_err_200_lorentzian, w_err_200_gauss))
 np.savetxt(os.path.join(outpath_data, 'K_temp_and_wind_biases_d.txt'),
+
            Data_K_measurements_d.T, delimiter=',')
