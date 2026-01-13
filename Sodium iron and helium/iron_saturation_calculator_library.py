@@ -276,7 +276,7 @@ def get_saturation(line, nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10,
         P_ns += (R_B[line] * p_isos_array[j] * np.sum(q_jk[line] *
                  n_e2[j,:,i+1] * temp_spectrum) / np.sum(temp_spectrum))
 
-    #If ratio=True, the degree of saturation is returned. If ratio != True,
+    #If ratio == True, the degree of saturation is returned. If ratio != True,
     # the total number of emitted photons in the case with saturation and
     # without saturation are returned individually
     if ratio:
@@ -349,6 +349,4 @@ def get_wind_and_temp_errors(line, Temp_Fe, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              args=(nu_Ls, Ps[1,:], line, Delta_nu_L, lineshape),
                              full_output=1)
     
-
     return res_sat, res_no_sat, Ps
-
