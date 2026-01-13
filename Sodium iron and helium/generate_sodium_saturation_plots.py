@@ -13,10 +13,6 @@ font = {'weight' : 'normal',
 
 matplotlib.rc('font', **font)
 
-c_light = 2.99792458 * 10**8 #m/s
-lamb0 = 589.1583 * 10**-9 #m, in vacuum
-nu0 = c_light / lamb0
-
 #Designate an output location for figure data and plots
 outpath_data = ''
 outpath_figs = ''
@@ -118,4 +114,5 @@ Na_temp_and_wind_biases_data = np.vstack((Es, dens_err_200, T_err_200,
                                           w_err_200))
 np.savetxt(os.path.join(outpath_data, 'Na_temp_and_wind_biases.txt'),
            Na_temp_and_wind_biases_data.T, delimiter=',')
+
 
