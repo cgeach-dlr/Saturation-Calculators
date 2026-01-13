@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 20 10:14:05 2025
-
-@author: geac_ch
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,10 +62,12 @@ def get_natural_absorption_line(j, k):
    #Returns the scattering cross-section spectrum of the transition
    # between ground-state j and excited state k (natural linewidth only)
  
-    #Need to make sure sufficient resolution is used to resolve absorption line
+    #Check that sufficient spectral resolution is used to resolve the
+    # absorption line
+    
     if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve absorption' + 
-                                                                       'line.')
+              'line.')
         return
         
     natural_absorption_line = (g_jk[j,k] / np.sum(g_jk[j,:]) * absorb_coeff *
@@ -96,9 +93,10 @@ def get_temperature_spectrum(Temp_Na):
     #Returns the Doppler-broadened distribution for a given temperature, i.e. 
     # the relative populations of atoms with a corresponding velocity-induced 
     # Doppler shift
+    
     sig_D_temp = sig_D * np.sqrt(Temp_Na)
-    return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2 / 
-                                                           (2*sig_D_temp**2))
+    return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2
+                                                      / (2*sig_D_temp**2))
 
 def get_doppler_broadened_spectrum_complete(Temp_Na):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
@@ -110,17 +108,20 @@ def get_doppler_broadened_spectrum_complete(Temp_Na):
 
 def g_L_lorentzian(nu_L, Delta_nu_L):
     #Returns a laser profile with a Lorentzian profile
-    return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2 +
-                                     (Delta_nu_L/2)**2)
+    
+    return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2
+                                                         + (Delta_nu_L/2)**2)
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
+    
     sigma_L = Delta_nu_L / 2.355
-    return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2 / 
-                                                              (2 * sigma_L**2))
+    return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2
+                                                     / (2 * sigma_L**2))
 
 def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
     #Returns a laser profile with the given profile
+    
     if lineshape == 'gauss':
         return g_L_gauss(nu_L, Delta_nu_L)
     elif lineshape == 'lorentzian':
@@ -130,17 +131,25 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
         return None
 
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
-                                                         lineshape='gauss'):
+                                   lineshape='gauss'):
     #Returns the effective absorption spectra, accounting for laser lineshape
-    
+
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+                                       
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return
+                                       
     L_jk = np.zeros((2, 3, len(nu_shifts)))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for j in range(2):
         for k in range(3):
-            alpha_jk = absorb_coeff * g_jk[j,k] / np.sum(g_jk[j,:]) * (f_D /
-                                          np.pi * Delta_nu_n / 2 / ((nu_shifts +
-                                          nu_jk[j,k])**2 + (Delta_nu_n/2)**2))
+            alpha_jk = (absorb_coeff * g_jk[j,k] / np.sum(g_jk[j,:]) * (f_D 
+                        / np.pi * Delta_nu_n / 2 / ((nu_shifts + nu_jk[j,k])**2
+                                                     + (Delta_nu_n/2)**2)))
             L_jk[j,k] = convolve(laser_spectrum, alpha_jk)
     return L_jk
 
@@ -189,6 +198,7 @@ def N_t_laser(nt, delta_t, t_L, N_L):
 
 def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
     #Returns the expected degree of saturation, according to the Megie approach
+    
     Omega = np.pi / 4 * alpha_L**2    
     t_s = (z**2 * Omega * t_L) / (2 * sigma_eff * N_L * T_atm)
     return 1 - 1 / (1 + tau_R/t_s) * (1 - tau_R/t_L * tau_R / (t_s + tau_R)
@@ -205,6 +215,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     #Find the index for which 99.999% of photons have been accounted for, in 
     # order to abridge the calculation (the DES can be solved analytically for
     # time steps where the number of photons is approximately zero)
+                       
     try:
         nt = np.where(np.cumsum(N) > 0.99999 * N_L)[0][0] + 2
     except IndexError:
@@ -296,6 +307,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     #If ratio=True, the degree of saturation is returned. If ratio != True, the 
     # total number of emitted photons in the case with saturation and without 
     # saturation are returned individually
+                       
     if ratio:
         return 1 - P_s / P_ns
     else:
@@ -332,9 +344,10 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
                                    t_L, nt, delta_t, Temp_Na, lineshape, 
                                    ratio=False)
     
-    #If ratio_beam=True, the degree of saturation is returned. If ratio_beam !=
-    # True, the total number of emitted photons in the case with saturation and
-    # without saturation are returned individually
+    #If ratio_beam == True, the degree of saturation is returned. If
+    # ratio_beam != True, the total number of emitted photons in the case with
+    # saturation and without saturation are returned individually
+                            
     if ratio_beam:
         return 1 - np.sum(sats[0,:] * r) / np.sum(sats[1,:] * r)
     else:
