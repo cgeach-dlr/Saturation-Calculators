@@ -13,10 +13,6 @@ font = {'weight' : 'normal',
 
 matplotlib.rc('font', **font)
 
-c_light = 2.99792458 * 10**8 #m/s
-lamb0 =  589.158 * 10**-9 #m, in vacuum
-nu0 = c_light / lamb0
-  
 #Designate an output location for figure data and plots
 outpath_data = ''
 outpath_figs = ''
@@ -125,3 +121,4 @@ nu_L_data = np.vstack((nu_Ls*1e-6, 100*sats_vdG_nu_Ls, 100*sats_Megie_nu_Ls,
                        100*sats_Megie_nu_Ls2))
 np.savetxt(os.path.join(outpath_data, 'Simple_nu_L_data.txt'), nu_L_data.T,
            delimiter=',')
+
