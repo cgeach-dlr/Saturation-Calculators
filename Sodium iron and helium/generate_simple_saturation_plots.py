@@ -18,8 +18,8 @@ lamb0 =  589.158 * 10**-9 #m, in vacuum
 nu0 = c_light / lamb0
   
 #Designate an output location for figure data and plots
-outpath_data = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Fig_data/temp/'
-outpath_figs = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Figs/temp/'
+outpath_data = ''
+outpath_figs = ''
   
 #Calculates the degree of saturation for a range of laser linewidths, following 
 # the Megie and VDG approaches.
