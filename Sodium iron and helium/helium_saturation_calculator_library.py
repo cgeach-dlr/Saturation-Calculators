@@ -54,8 +54,8 @@ def convolve(a,b):
 def get_natural_absorption_line(k):
    #Returns the scattering cross-section spectrum of the transition
    # to the kth excited state (natural linewidth only)
- 
-    #Check to ensure that sufficient resolution is used to resolve the 
+    
+    #Check that sufficient spectral resolution is used to resolve the
     # absorption line
     
     if delta_nu > Delta_nu_n / 5.:
@@ -122,8 +122,9 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
     #Returns the effective absorption spectra, accounting for laser lineshape
 
-    #Check to ensure that sufficient resolution is used to resolve the 
+    #Check that sufficient spectral resolution is used to resolve the
     # laser line
+                                       
     if delta_nu > Delta_nu_L / 5.:
         print('Error: insufficient spectral resolution to resolve the' + 
               ' laser line.')
@@ -279,6 +280,7 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
     #In order to avoid coverage issues, the parameter delta_r is adjusted so
     # that the field-of-view of the instrument is covered by an integer number
     # of equal-width bins.
+                            
     r_max = alpha_T/2.
     n_r = int(r_max / delta_r)+1
     delta_r_adjusted = r_max / n_r
@@ -295,7 +297,7 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
                                    T_atm, t_L, nt, delta_t, Temp_He,
                                    lineshape, ratio=False)
     
-    #If ratio_beam=True, the degree of saturation is returned. If
+    #If ratio_beam == True, the degree of saturation is returned. If
     # ratio_beam != True, the total number of emitted photons in the case
     # with saturation and without saturation are returned individually
                             
@@ -330,5 +332,6 @@ def get_wind_and_temp_errors(Temp_He, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
     
     return res_sat, res_no_sat, Ps
+
 
 
