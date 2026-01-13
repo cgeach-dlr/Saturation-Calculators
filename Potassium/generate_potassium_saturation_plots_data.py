@@ -60,9 +60,16 @@ Res_gauss_model = []
 Res_lorentzian_model = []
 
 for i in range(5):
-    Res_gauss_model.append(k_lib.get_model_residuals('gauss', Temps_gauss[i]))
-    Res_lorentzian_model.append(k_lib.get_model_residuals('lorentzian',
-                                                          Temps_lorentzian[i]))
+    Res_gauss_model.append(k_lib.get_model_residuals(nu_Ls, Delta_nu_L, N_L, z,
+                                                     alpha_L, alpha_T, T_atm,
+                                                     t_L, nt, delta_t, delta_r,
+                                                     Temps_gauss[i], 'gauss'))
+    Res_lorentzian_model.append(k_lib.get_model_residuals(nu_Ls, Delta_nu_L,
+                                                          N_L, z, alpha_L,
+                                                          alpha_T, T_atm, t_L,
+                                                          nt, delta_t, delta_r,
+                                                          Temps_lorentzian[i],
+                                                          'lorentzian'))
     
 names = ['25-27 January 2010', '27-28 January 2011', '24-26 February 2011',
          '14-15 January 2012', '30-31 January 2012']
