@@ -141,6 +141,15 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
     #Returns the effective absorption spectrum, accounting for laser lineshape
+
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+                                       
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return 
+      
     L_jk = np.zeros((2, 2, 2, len(nu_shifts)))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
@@ -159,6 +168,7 @@ def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
     # spectrum, accounting for the laser lineshape
+                                                  
     temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_K)
     laser_spectrum = get_laser_pulseshape(0, Delta_nu_L, lineshape)
     sigma_tot = convolve(laser_spectrum, temp_spectrum)
@@ -310,9 +320,9 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
                           + g_jk[1,j]/np.sum(g_jk[:,j]) * q_jk[1,j])
                           * temp_spectrum) / np.sum(temp_spectrum)     
             
-    #If ratio=True, the degree of saturation is returned. If ratio != True,
-    # the total number of emitted photons in the case with saturation and
-    # without saturation are returned individually
+    #If ratio == True, the degree of saturation is returned. If 
+    # ratio != True, the total number of emitted photons in the case with 
+    # saturation and without saturation are returned individually
     
     if ratio:
         return 1 - P_s / P_ns
@@ -387,7 +397,16 @@ def get_wind_and_temp_errors(Temp_K, nu_Ls, Delta_nu_L, N_L, z, T_atm,
     return res_sat, res_no_sat, Ps
   
 def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
-    obs_path = 'C:/Users/geac_ch/Documents/Python/Data/K-Lidar/'
+    #Data analysis for the potassium lidar data. The data are filtered, 
+    # background-subtracted, and normalized, then binned in time and
+    # altitude. A three-parameter fit is made to the resulting spectrum
+    # of the scattering cross-section, and the residuals of that fit are
+    # returned, along with the average temperature over the potassium 
+    # layer.
+
+    #The obs_path field must be updated to point to where the data is 
+    # saved locally.    
+    obs_path = ''
     fnames = os.listdir(obs_path)
     Res_array = []
     Temps = np.zeros(5)
@@ -453,24 +472,14 @@ def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
     
     return Res_array, Temps
   
-def get_model_residuals(lineshape, Temp, Delta_nu_L=20e6):
-    lambda_Ls = np.arange(1.55, -1.52, -0.18)*1e-12
-    nu_Ls = -c_light / lamb0**2 * lambda_Ls
+  
+def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
+                        t_L, nt, delta_t, delta_r, Temp, lineshape):
+    #Simulates a multi-wavelength measurement, performs a three-parameter fit
+    # to the simulated spectrum, and computes the resulting residuals.
+  
     sat_spectrum = np.zeros(len(nu_Ls))
 
-    E_pulse = 50 #mJ
-    t_L = 275 #ns
-    T_atm = 0.7
-    z = 90000 #km
-    alpha_L = 270e-6 #rad
-    alpha_T = 186e-6 #rad
-    delta_r = 50e-6 #rad
-
-    nt = 2000
-    delta_t = 1
-    N_L = N_L_from_pulse_energy(E_pulse)
-    Delta_nu_L = 2e7 #Hz
-    
     for i in range(len(nu_Ls)):
         sat_spectrum[i], _ = get_saturation_beam(nu_Ls[i], Delta_nu_L, N_L, z,
                                                  T_atm, alpha_L, alpha_T, t_L,
@@ -486,4 +495,4 @@ def get_model_residuals(lineshape, Temp, Delta_nu_L=20e6):
     model_resid = (sat_spectrum - plot_fit(model_fit, nu_Ls, Delta_nu_L,
                                            lineshape)) / sat_spectrum
     
-    return model_resid  
+    return model_resid 
