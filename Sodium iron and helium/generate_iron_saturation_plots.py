@@ -51,8 +51,8 @@ class HandlerTupleVertical(HandlerTuple):
         return leglines
 
 #Designate an output location for figure data and plots
-outpath_data = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Fig_data/temp/'
-outpath_figs = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Figs/temp/'
+outpath_data = ''
+outpath_figs = ''
 
 #Calculates the spectrum of the degree of saturation, following the Megie and
 # VDG approaches.
@@ -186,3 +186,4 @@ Fe_temp_and_wind_biases_data = np.vstack((Es, dens_err_200_gauss,
                                           T_err_200_lorentz))
 np.savetxt(os.path.join(outpath_data, 'Fe_temp_and_wind_biases.txt'),
            Fe_temp_and_wind_biases_data.T, delimiter=',')
+
