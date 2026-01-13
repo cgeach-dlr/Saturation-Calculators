@@ -304,7 +304,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
                        + n_e2[3,:,i+1] * q_jk[1,2]) * temp_spectrum) / 
                        np.sum(temp_spectrum))
     
-    #If ratio=True, the degree of saturation is returned. If ratio != True, the 
+    #If ratio == True, the degree of saturation is returned. If ratio != True, the 
     # total number of emitted photons in the case with saturation and without 
     # saturation are returned individually
                        
@@ -315,6 +315,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
 
 def gauss_1D(alpha_L, r):
     #Returns a 1D Gaussian profile
+    
     return np.exp(-4*r**2/alpha_L**2)
 
 def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T, 
