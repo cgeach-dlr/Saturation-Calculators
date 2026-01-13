@@ -56,7 +56,8 @@ def get_natural_absorption_line(k):
  
     #Need to make sure sufficient resolution is used to resolve the absorption
     # line
-    if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
+    
+    if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve' + 
               ' absorption line.')
         return
@@ -79,6 +80,7 @@ def get_temperature_spectrum(Temp_He):
     #Returns the Doppler-broadened distribution for a given temperature, i.e.
     # the relative populations of atoms with a corresponding velocity-induced
     # Doppler shift
+    
     sig_D_temp = sig_D * np.sqrt(Temp_He)
     return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2 
                                                       / (2*sig_D_temp**2))
@@ -86,23 +88,27 @@ def get_temperature_spectrum(Temp_He):
 def get_doppler_broadened_spectrum_complete(Temp_He):
     #Returns the combined Doppler-broadened scattering cross-section spectrum 
     # for both 2^3S <--> 2^3P transitions.
+    
     temp_spectrum = get_temperature_spectrum(Temp_He)
     combined_spectrum = get_combined_absorption_line()
     return convolve(combined_spectrum, temp_spectrum)
 
 def g_L_lorentzian(nu_L, Delta_nu_L):
     #Returns a laser profile with a Lorentzian profile
+    
     return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2 
                                                          + (Delta_nu_L/2)**2)
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
+    
     sigma_L = Delta_nu_L / 2.355
     return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2 
                                                       / (2 * sigma_L**2))
 
 def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
     #Returns a laser profile with the given profile
+    
     if lineshape == 'gauss':
         return g_L_gauss(nu_L, Delta_nu_L)
     elif lineshape == 'lorentzian':
@@ -114,6 +120,12 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
     #Returns the effective absorption spectra, accounting for laser lineshape
+        
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return
+                                           
     L_jk = np.zeros((2, len(nu_shifts)))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
@@ -158,8 +170,7 @@ def N_L_from_pulse_energy(E, nu=nu0):
 
 def N_t_laser(nt, delta_t, t_L, N_L):
     #Returns the number of photons emitted per time interval, assuming the
-    # laser pulse shape
-    # approximation given by VDG
+    # laser pulse shape approximation given by VDG
     
     t = np.arange(delta_t/2, nt*delta_t + delta_t/2, delta_t)
     a = 3.4 / t_L 
@@ -167,7 +178,7 @@ def N_t_laser(nt, delta_t, t_L, N_L):
 
 def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
     #Returns the expected degree of saturation, according to the Megie
-    # approach
+    # approximation
     
     Omega = np.pi / 4 * alpha_L**2    
     t_s = (z**2 * Omega * t_L) / (2 * sigma_eff * N_L * T_atm)
@@ -177,7 +188,7 @@ def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
 def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
                    delta_t=1, Temp_He=1000, lineshape='gauss', ratio=False):
     #Returns the expected degree of saturation, according to the VDG approach    
-    
+                       
     N = N_t_laser(nt, delta_t, t_L, N_L) 
     Omega = np.pi / 4 * alpha_L**2    
     temp_spectrum = get_temperature_spectrum(Temp_He)
@@ -312,3 +323,4 @@ def get_wind_and_temp_errors(Temp_He, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
     
     return res_sat, res_no_sat, Ps
+
