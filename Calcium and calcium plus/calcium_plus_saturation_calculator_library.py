@@ -53,13 +53,13 @@ def convolve(a,b):
     return conv
 
 def get_natural_absorption_line(iso):
-   #Returns the scattering cross-section spectrum of the transition between
-   # ground-state j and excited state k for isotope 39K (i=0) and 41K (i=1)
-   # (natural linewidth only) 
+    #Returns the scattering cross-section spectrum of the absorption line for
+    # the given isotope (natural linewidth only)
  
-    #Need to make sure sufficient resolution is used to resolve absorption line
-    
-    if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+
+    if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve absorption' + 
               ' line.')
         return
@@ -70,9 +70,8 @@ def get_natural_absorption_line(iso):
     return natural_absorption_line
 
 def get_combined_absorption_line():
-    #Returns the combined absorption line for the complete D_2 line, accounting
-    # for the differing relative abundances of the j=1 and j=2 ground-states 
-    # (given by (2j+1)/8, respectively.)
+    #Returns the combined scattering cross-section spectrum of the absorption
+    # line for all isotpes, accounting for relative abundances
     
     combined_line = np.zeros(len(nu_shifts))
     for iso in range(4):
@@ -99,11 +98,13 @@ def get_doppler_broadened_spectrum_complete(Temp_Ca):
 
 def g_L_lorentzian(nu_L, Delta_nu_L):
     #Returns a laser profile with a Lorentzian profile
+    
     return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2
                                                           + (Delta_nu_L/2)**2)
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
+    
     sigma_L = Delta_nu_L / 2.355
     return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2
                                                     / (2 * sigma_L**2))
@@ -122,7 +123,15 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
     #Returns the effective absorption spectra, accounting for laser lineshape
+
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
                                        
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return
+        
     L_jk = np.zeros((4, len(nu_shifts)))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
@@ -167,6 +176,7 @@ def fit_wind_and_temp(params, nu_Ls, ydata, Delta_nu_L=100e6,
 
 def N_L_from_pulse_energy(E, nu=nu0): 
     #Returns the number of photons per pulse for a pulse energy in mJ
+    
     return E/(h_planck*nu) / 1000
 
 def N_t_laser(nt, delta_t, t_L, N_L):
@@ -179,6 +189,7 @@ def N_t_laser(nt, delta_t, t_L, N_L):
 
 def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
     #Returns the expected degree of saturation, according to the Megie approach
+    
     Omega = np.pi / 4 * alpha_L**2    
     t_s = (z**2 * Omega * t_L) / (2 * sigma_eff * N_L * T_atm)
     return 1 - 1 / (1 + tau_R/t_s) * (1 - tau_R/t_L * tau_R / (t_s + tau_R)
@@ -195,6 +206,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     #Find the index for which 99.999% of photons have been accounted for, in
     # order to abridge the calculation (the DES can be solved analytically for
     # time steps where the number of photons is approximately zero)
+                       
     try:
         nt = np.where(np.cumsum(N) > 0.99999 * N_L)[0][0] + 2
     except IndexError:
@@ -258,6 +270,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
 
 def gauss_1D(alpha_L, r):
     #Returns a 1D Gaussian profile
+    
     return np.exp(-4*r**2/alpha_L**2)
 
 def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
@@ -287,9 +300,9 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
                                    T_atm, t_L, nt, delta_t, Temp_Ca, lineshape,
                                    ratio=False)
     
-    #If ratio_beam=True, the degree of saturation is returned. If ratio_beam !=
-    # True, the total number of emitted photons in the case with saturation and
-    # without saturation are returned individually
+    #If ratio_beam == True, the degree of saturation is returned. If
+    # ratio_beam != True, the total number of emitted photons in the case with 
+    # saturation and without saturation are returned individually
     
     if ratio_beam:
         return 1 - np.sum(sats[0,:] * r) / np.sum(sats[1,:] * r)
@@ -320,6 +333,6 @@ def get_wind_and_temp_errors(Temp_Ca, nu_Ls, Delta_nu_L, N_L, z, T_atm,
     res_no_sat = opt.leastsq(fit_wind_and_temp, p,
                              args=(nu_Ls, Ps[1,:], Delta_nu_L,lineshape),
                              full_output=1)
-    
 
     return res_sat, res_no_sat, Ps
+
