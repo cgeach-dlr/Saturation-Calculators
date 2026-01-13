@@ -46,6 +46,7 @@ nv = len(nu_shifts)
 def convolve(a,b):
     #Calculates the convolution of two arrays and corrects for the shift in
     # index arising from np.convolve
+    
     conv = np.convolve(a,b,'same')*delta_nu
     conv[:-1] = conv[1:]
     return conv
@@ -54,8 +55,8 @@ def get_natural_absorption_line(k):
    #Returns the scattering cross-section spectrum of the transition
    # to the kth excited state (natural linewidth only)
  
-    #Need to make sure sufficient resolution is used to resolve the absorption
-    # line
+    #Check to ensure that sufficient resolution is used to resolve the 
+    # absorption line
     
     if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve' + 
@@ -120,7 +121,9 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
     #Returns the effective absorption spectra, accounting for laser lineshape
-        
+
+    #Check to ensure that sufficient resolution is used to resolve the 
+    # laser line
     if delta_nu > Delta_nu_L / 5.:
         print('Error: insufficient spectral resolution to resolve the' + 
               ' laser line.')
@@ -139,6 +142,7 @@ def get_total_scattering_cross_section_spectrum(Temp_He, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
     # spectrum, accounting for the laser lineshape
+                                                    
     temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_He)
     laser_spectrum = get_laser_pulseshape(0, Delta_nu_L, lineshape)
     sigma_tot = convolve(laser_spectrum, temp_spectrum)
@@ -254,6 +258,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     #If ratio=True, the degree of saturation is returned. If ratio != True,
     # the total number of emitted photons in the case with saturation and
     # without saturation are returned individually
+                       
     if ratio:
         return 1 - P_s / P_ns
     else:
@@ -261,6 +266,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
 
 def gauss_1D(alpha_L, r):
     #Returns a 1D Gaussian profile
+    
     return np.exp(-4*r**2/alpha_L**2)
 
 def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
@@ -292,6 +298,7 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
     #If ratio_beam=True, the degree of saturation is returned. If
     # ratio_beam != True, the total number of emitted photons in the case
     # with saturation and without saturation are returned individually
+                            
     if ratio_beam:
         return 1 - np.sum(sats[0,:] * r) / np.sum(sats[1,:] * r)
     else:
@@ -323,4 +330,5 @@ def get_wind_and_temp_errors(Temp_He, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
     
     return res_sat, res_no_sat, Ps
+
 
