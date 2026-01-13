@@ -23,7 +23,6 @@ absorb_coeff = e_elec**2/(4*eps_0 * m_elec * c_light)
 sig_D = nu0*np.sqrt(k_B / (m_Ca * c_light**2))
 f_D = 1.75
 
-
 frac_40 = 0.9694
 frac_42 = 0.0064
 frac_44 = 0.0209
@@ -38,7 +37,6 @@ nu_44 = 770.8 * 10**6 #Hz - relative frequency shift
 nu_46 = 1158.9 * 10**6 #Hz - relative frequency shift
 
 nu_isos = np.array([nu_40, nu_42, nu_44, nu_46])
-
 
 #Hanle factors - assumed to be 1 here.
 q_isos = np.array([1, 1, 1, 1]) 
