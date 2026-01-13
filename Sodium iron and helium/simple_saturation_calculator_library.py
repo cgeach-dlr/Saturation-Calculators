@@ -28,6 +28,7 @@ nv = len(nu_shifts)
 def convolve(a,b):
     #Calculates the convolution of two arrays and corrects for the shift in
     # index arising from np.convolve
+    
     conv = np.convolve(a,b,'same')*delta_nu
     conv[:-1] = conv[1:]
     return conv
@@ -36,8 +37,9 @@ def get_natural_absorption_line():
     #Returns the scattering cross-section spectrum of the absorption line 
     # (natural linewidth only)
     
-    #Need to make sure sufficient resolution is used to resolve absorption line
-    if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
+    #Check that sufficient spectral resolution is used to resolve the
+    # absorption line
+    if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve absorption' +
                                                                       'line.')
         return
@@ -51,12 +53,14 @@ def get_temperature_spectrum(Temp_layer):
     #Returns the Doppler-broadened distribution for a given temperature, i.e.
     # the relative populations of atoms with a corresponding velocity-induced
     # Doppler shift
+    
     sig_D_temp = sig_D * np.sqrt(Temp_layer)
     return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2 /
                                                             (2*sig_D_temp**2))
 
 def get_doppler_broadened_spectrum(Temp_layer):
     #Returns the Doppler-broadened scattering cross-section spectrum
+    
     spectrum = np.zeros(len(nu_shifts))
     temp_spectrum = get_temperature_spectrum(Temp_layer)
     absorption_spectrum = get_natural_absorption_line()
@@ -65,12 +69,22 @@ def get_doppler_broadened_spectrum(Temp_layer):
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
+    
     sigma_L = Delta_nu_L / 2.355
     return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2 
                                                        / (2 * sigma_L**2))
 
 def get_effective_absorption_line(nu_L, Delta_nu_L):
     #Returns the effective absorption spectrum, accounting for laser lineshape 
+
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+                                       
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return
+    
     laser_spectrum = g_L_gauss(nu_L, Delta_nu_L)
     effective_absorption_line = convolve(laser_spectrum,
                                             get_natural_absorption_line())
@@ -92,6 +106,7 @@ def N_t_tophat(nt, delta_t, t_L, N_L):
    
 def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
     #Returns the expected degree of saturation, according to the Megie approach
+    
     Omega = np.pi / 4 * alpha_L**2    
     t_s = (z**2 * Omega * t_L) / (2 * sigma_eff * N_L * T_atm)
     return 1 - 1 / (1 + tau_R/t_s) * (1 - tau_R/t_L * tau_R / (t_s + tau_R) *
@@ -99,7 +114,8 @@ def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
 
 def get_saturation(nu_L, Delta_nu_L, N_L,  z,  alpha_L, T_atm, t_L=10, nt=50,
                    delta_t=1, Temp_layer=200, ratio=False):
-    #Returns the expected degree of saturation, according to the VDG approach    
+    #Returns the expected degree of saturation, according to the VDG approach  
+                       
     N = N_t_tophat(nt, delta_t, t_L, N_L) 
     Omega = np.pi / 4 * alpha_L**2    
     temp_spectrum = get_temperature_spectrum(Temp_layer)
@@ -146,5 +162,4 @@ def get_saturation(nu_L, Delta_nu_L, N_L,  z,  alpha_L, T_atm, t_L=10, nt=50,
     P_s += np.sum(n_e[:,i+1] * temp_spectrum) / np.sum(temp_spectrum)
     P_ns += np.sum(n_e2[:,i+1] * temp_spectrum) / np.sum(temp_spectrum)
 
-    
     return 1 - P_s / P_ns
