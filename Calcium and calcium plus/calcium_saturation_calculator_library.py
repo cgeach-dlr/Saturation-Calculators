@@ -119,14 +119,14 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
-    #Returns the effective absorption spectrum, accounting for laser lineshape
+    #Returns the effective absorption spectra, accounting for laser lineshape
     L_jk = np.zeros((4, len(nu_shifts)))
-    Delta_nu_eff = Delta_nu_n + Delta_nu_L
+    laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for iso in range(4):
-        L_jk[iso,:] = (absorb_coeff * f_D / np.pi * Delta_nu_eff / 2 /
-                    ((nu_isos[iso] + nu_shifts - nu_L)**2 +
-                                                (Delta_nu_eff/2)**2))
+        alpha_jk = (absorb_coeff * f_D / np.pi * Delta_nu_n / 2 
+                    / ((nu_shifts + nu_isos[iso])**2 + (Delta_nu_n/2)**2))
+        L_jk[iso,:] = convolve(laser_spectrum, alpha_jk)
     return L_jk
 
 def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
