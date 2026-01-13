@@ -18,8 +18,8 @@ lamb0 = 589.1583 * 10**-9 #m, in vacuum
 nu0 = c_light / lamb0
 
 #Designate an output location for figure data and plots
-outpath_data = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Fig_data/temp/'
-outpath_figs = 'C:/Users/geac_ch/Documents/HELIX/Saturation paper/Figs/temp/'
+outpath_data = ''
+outpath_figs = ''
 
 #Calculates the spectrum of the degree of saturation, following the Megie and
 # VDG approaches.
@@ -118,3 +118,4 @@ Na_temp_and_wind_biases_data = np.vstack((Es, dens_err_200, T_err_200,
                                           w_err_200))
 np.savetxt(os.path.join(outpath_data, 'Na_temp_and_wind_biases.txt'),
            Na_temp_and_wind_biases_data.T, delimiter=',')
+
