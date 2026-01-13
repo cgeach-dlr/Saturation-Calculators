@@ -86,8 +86,8 @@ def get_natural_absorption_line(line, iso):
     return natural_absorption_line
 
 def get_combined_absorption_line(line):
-    #Returns the combined scattering cross-section spectrum for all isotpes
-    # accounting for relative abundances
+    #Returns the combined scattering cross-section spectrum of the given
+    # absorption line for all isotpes, accounting for relative abundances
     
     combined_line = np.zeros(nv)
     for i in range(4):
@@ -351,3 +351,4 @@ def get_wind_and_temp_errors(line, Temp_Fe, nu_Ls, Delta_nu_L, N_L, z, T_atm,
     
 
     return res_sat, res_no_sat, Ps
+
