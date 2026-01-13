@@ -49,17 +49,19 @@ nv = len(nu_shifts)
 def convolve(a,b):
     #Calculates the convolution of two arrays and corrects for the shift in 
     # index arising from np.convolve
+    
     conv = np.convolve(a,b,'same')*delta_nu
     conv[:-1] = conv[1:]
     return conv
 
 def get_natural_absorption_line(iso):
-   #Returns the scattering cross-section spectrum of the transition between
-   # ground-state j and excited state k for isotope 39K (i=0) and 41K (i=1)
-   # (natural linewidth only) 
+    #Returns the scattering cross-section spectrum of the absorption line for
+    # the given isotope (natural linewidth only)
  
-    #Need to make sure sufficient resolution is used to resolve absorption line
-    if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+
+    if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve absorption' + 
               ' line.')
         return
@@ -70,9 +72,8 @@ def get_natural_absorption_line(iso):
     return natural_absorption_line
 
 def get_combined_absorption_line():
-    #Returns the combined absorption line for the complete D_2 line, accounting
-    # for the differing relative abundances of the j=1 and j=2 ground-states
-    # (given by (2j+1)/8, respectively.)
+    #Returns the combined scattering cross-section spectrum of the absorption
+    # line for all isotpes, accounting for relative abundances
     
     combined_line = np.zeros(len(nu_shifts))
     for iso in range(4):
@@ -84,24 +85,28 @@ def get_temperature_spectrum(Temp_Ca):
     #Returns the Doppler-broadened distribution for a given temperature, i.e.
     # the relative populations of atoms with a corresponding velocity-induced
     # Doppler shift
+    
     sig_D_temp = sig_D * np.sqrt(Temp_Ca)
     return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2/
                                                          (2*sig_D_temp**2))
 
 def get_doppler_broadened_spectrum_complete(Temp_Ca):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
-    # complete D_2 line
+    # complete absorption line
+    
     temp_spectrum = get_temperature_spectrum(Temp_Ca)
     combined_spectrum = get_combined_absorption_line()
     return convolve(combined_spectrum, temp_spectrum)
 
 def g_L_lorentzian(nu_L, Delta_nu_L):
     #Returns a laser profile with a Lorentzian profile
+    
     return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2
                                      + (Delta_nu_L/2)**2)
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
+    
     sigma_L = Delta_nu_L / 2.355
     return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2/
                                                              (2 * sigma_L**2))
@@ -109,6 +114,7 @@ def g_L_gauss(nu_L, Delta_nu_L):
 def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
   
     #Returns a laser profile with the given profile
+    
     if lineshape == 'gauss':
         return g_L_gauss(nu_L, Delta_nu_L)
     elif lineshape == 'lorentzian':
@@ -120,6 +126,15 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
     #Returns the effective absorption spectra, accounting for laser lineshape
+       
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+                                       
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return                
+        
     L_jk = np.zeros((4, len(nu_shifts)))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
@@ -133,6 +148,7 @@ def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
     # spectrum, accounting for the laser lineshape
+                                                    
     temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_K)
     if Delta_nu_L > 10e6:
         laser_spectrum = get_laser_pulseshape(0, Delta_nu_L, lineshape)
@@ -163,6 +179,7 @@ def fit_wind_and_temp(params, nu_Ls, ydata, Delta_nu_L=100e6,
 
 def N_L_from_pulse_energy(E, nu=nu0): 
     #Returns the number of photons per pulse for a pulse energy in mJ
+    
     return E/(h_planck*nu) / 1000
 
 def N_t_laser(nt, delta_t, t_L, N_L):
@@ -175,6 +192,7 @@ def N_t_laser(nt, delta_t, t_L, N_L):
 
 def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
     #Returns the expected degree of saturation, according to the Megie approach
+    
     Omega = np.pi / 4 * alpha_L**2    
     t_s = (z**2 * Omega * t_L) / (2 * sigma_eff * N_L * T_atm)
     return 1 - 1 / (1 + tau_R/t_s) * (1 - tau_R/t_L * tau_R / (t_s + tau_R)
@@ -191,6 +209,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     #Find the index for which 99.999% of photons have been accounted for, in
     # order to abridge the calculation (the DES can be solved analytically for
     # time steps where the number of photons is approximately zero)
+                       
     try:
         nt = np.where(np.cumsum(N) > 0.99999 * N_L)[0][0] + 2
     except IndexError:
@@ -207,7 +226,6 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     P_s = 0
     P_ns = 0
              
-    
     L_jk = get_effective_absorption_lines(nu_L, Delta_nu_L, lineshape)
     
     for i in range(nt - 1):
@@ -236,16 +254,15 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
                                                  * q_isos[iso]) / tau_R 
                                        * delta_t / np.sum(temp_spectrum))
         
-            
     for iso in range(4):
         P_s += f_isos[iso] * (np.sum(n_e[iso,:,i+1] * q_isos[iso]
                                     * temp_spectrum) / np.sum(temp_spectrum))
         P_ns += f_isos[iso] * (np.sum(n_e2[iso,:,i+1] * q_isos[iso]
                                     * temp_spectrum) / np.sum(temp_spectrum))     
             
-    #If ratio=True, the degree of saturation is returned. If ratio != True,
-    # the total number of emitted photons in the case with saturation and
-    # without saturation are returned individually
+    #If ratio == True, the degree of saturation is returned. If
+    # ratio != True, the total number of emitted photons in the case with 
+    # saturation and without saturation are returned individually
     
     if ratio:
         return 1 - P_s / P_ns
