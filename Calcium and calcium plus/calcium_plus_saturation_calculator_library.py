@@ -22,7 +22,6 @@ absorb_coeff = e_elec**2/(4*eps_0 * m_elec * c_light)
 sig_D = nu0*np.sqrt(k_B / (m_Ca * c_light**2))
 f_D = 0.682
 
-
 frac_40 = 0.9694
 frac_42 = 0.0064
 frac_44 = 0.0209
@@ -38,7 +37,6 @@ nu_46 = 1299.1 * 10**6 #Hz - relative frequency shift
 
 nu_isos = np.array([nu_40, nu_42, nu_44, nu_46])
 
-
 #Hanle factors - assumed to be 1 here.
 q_isos = np.array([1, 1, 1, 1]) 
 
@@ -49,6 +47,7 @@ nv = len(nu_shifts)
 def convolve(a,b):
     #Calculates the convolution of two arrays and corrects for the shift in
     # index arising from np.convolve
+    
     conv = np.convolve(a,b,'same')*delta_nu
     conv[:-1] = conv[1:]
     return conv
@@ -59,6 +58,7 @@ def get_natural_absorption_line(iso):
    # (natural linewidth only) 
  
     #Need to make sure sufficient resolution is used to resolve absorption line
+    
     if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve absorption' + 
               ' line.')
@@ -84,6 +84,7 @@ def get_temperature_spectrum(Temp_Ca):
     #Returns the Doppler-broadened distribution for a given temperature, i.e.
     # the relative populations of atoms with a corresponding velocity-induced
     # Doppler shift
+    
     sig_D_temp = sig_D * np.sqrt(Temp_Ca)
     return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2/
                                                          (2*sig_D_temp**2))
@@ -91,6 +92,7 @@ def get_temperature_spectrum(Temp_Ca):
 def get_doppler_broadened_spectrum_complete(Temp_Ca):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
     # complete D_2 line
+    
     temp_spectrum = get_temperature_spectrum(Temp_Ca)
     combined_spectrum = get_combined_absorption_line()
     return convolve(combined_spectrum, temp_spectrum)
@@ -98,17 +100,17 @@ def get_doppler_broadened_spectrum_complete(Temp_Ca):
 def g_L_lorentzian(nu_L, Delta_nu_L):
     #Returns a laser profile with a Lorentzian profile
     return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2
-                                     + (Delta_nu_L/2)**2)
+                                                          + (Delta_nu_L/2)**2)
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
     sigma_L = Delta_nu_L / 2.355
-    return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2/
-                                                             (2 * sigma_L**2))
+    return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2
+                                                    / (2 * sigma_L**2))
 
 def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
-  
     #Returns a laser profile with the given profile
+    
     if lineshape == 'gauss':
         return g_L_gauss(nu_L, Delta_nu_L)
     elif lineshape == 'lorentzian':
@@ -119,16 +121,17 @@ def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
 
 def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
                                    lineshape='gauss'):
-    #Returns the effective absorption spectrum, accounting for laser lineshape
+    #Returns the effective absorption spectra, accounting for laser lineshape
+                                       
     L_jk = np.zeros((4, len(nu_shifts)))
-    Delta_nu_eff = Delta_nu_n + Delta_nu_L
+    laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for iso in range(4):
-        L_jk[iso,:] = (absorb_coeff * f_D / np.pi * Delta_nu_eff / 2 /
-                    ((nu_isos[iso] + nu_shifts - nu_L)**2 +
-                                                (Delta_nu_eff/2)**2))
+        alpha_jk = (absorb_coeff * f_D / np.pi * Delta_nu_n / 2 
+                    / ((nu_shifts + nu_isos[iso])**2 + (Delta_nu_n/2)**2))
+        L_jk[iso,:] = convolve(laser_spectrum, alpha_jk)
     return L_jk
-
+                                       
 def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
@@ -158,7 +161,8 @@ def fit_wind_and_temp(params, nu_Ls, ydata, Delta_nu_L=100e6,
     # (params[1]) and line-of-sight wind velocity (params[2])
     
     fit = params[0]*get_total_scattering_cross_section(params[1],
-                nu_Ls-params[2]/lamb0, Delta_nu_L, lineshape)
+                                                       nu_Ls - params[2]/lamb0,
+                                                       Delta_nu_L, lineshape)
     return fit - ydata
 
 def N_L_from_pulse_energy(E, nu=nu0): 
@@ -317,4 +321,5 @@ def get_wind_and_temp_errors(Temp_Ca, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              args=(nu_Ls, Ps[1,:], Delta_nu_L,lineshape),
                              full_output=1)
     
+
     return res_sat, res_no_sat, Ps
