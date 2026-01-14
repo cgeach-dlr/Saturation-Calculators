@@ -61,7 +61,7 @@ def get_temperature_spectrum(Temp_layer):
 def get_doppler_broadened_spectrum(Temp_layer):
     #Returns the Doppler-broadened scattering cross-section spectrum
     
-    spectrum = np.zeros(len(nu_shifts))
+    spectrum = np.zeros(nv)
     temp_spectrum = get_temperature_spectrum(Temp_layer)
     absorption_spectrum = get_natural_absorption_line()
     spectrum = convolve(absorption_spectrum, temp_spectrum)
@@ -163,3 +163,4 @@ def get_saturation(nu_L, Delta_nu_L, N_L,  z,  alpha_L, T_atm, t_L=10, nt=50,
     P_ns += np.sum(n_e2[:,i+1] * temp_spectrum) / np.sum(temp_spectrum)
 
     return 1 - P_s / P_ns
+
