@@ -14,7 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath = os.path.join(os.path.dirname(os.getcwd()), 'Figs and Data')
+outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
 #Calculates the spectrum of the degree of saturation.
 
@@ -115,6 +115,7 @@ He_temp_and_wind_biases_data = np.vstack((Es, 100*dens_err_200, T_err_200,
                                           w_err_200))
 np.savetxt(os.path.join(outpath, 'He_temp_and_wind_biases.txt'),
            He_temp_and_wind_biases_data.T, delimiter=',')
+
 
 
 
