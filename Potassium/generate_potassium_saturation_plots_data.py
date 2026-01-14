@@ -18,8 +18,7 @@ lamb0 =  770.10835 * 10**-9 #m, in vacuum
 nu0 = c_light / lamb0
 
 #Designate an output location for figure data and plots
-outpath_data = ''
-outpath_figs = ''
+outpath = ''
 
 Res_gauss_data, Temps_gauss = k_lib.get_lidar_residuals('gauss')
 Res_lorentzian_data, Temps_lorentzian = k_lib.get_lidar_residuals('lorentzian')
@@ -84,12 +83,12 @@ plt.xlabel('Wavelength (pm)')
 plt.ylabel('Relative residuals (%)') 
 plt.axhline(0, c='k')
 
-plt.savefig(os.path.join(outpath_figs, 'K_measurements.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_measurements.pdf'), dpi=300)
 plt.show()
 
 Data_K_measurements = np.hstack((lambda_Ls[:, None] * 1e12,
                                  100*Res_lorentzian_data[2].T))
-np.savetxt(os.path.join(outpath_data, 'K_measurements.txt'),
+np.savetxt(os.path.join(outpath, 'K_measurements.txt'),
            Data_K_measurements, delimiter=',')
 
 figure_parts = np.array([['a','b'],
@@ -125,7 +124,7 @@ for i in range(3):
                                        100*np.mean(data_resid, axis=0),
                 100*(np.mean(data_resid, axis=0) + np.std(data_resid, axis=0)),
                 100*(np.mean(data_resid, axis=0) - np.std(data_resid, axis=0))))
-        np.savetxt(os.path.join(outpath_data, 'K_comparison_' +
+        np.savetxt(os.path.join(outpath, 'K_comparison_' +
                                        figure_parts[i,j] + '.txt'),
                                        Data_K_comparison.T, delimiter=',')
         
@@ -138,7 +137,7 @@ for i in range(3):
 ax[0,0].legend()
       
 fig.tight_layout()
-plt.savefig(os.path.join(outpath_figs, 'K_comparison.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_comparison.pdf'), dpi=300)
 plt.show()
 
 
@@ -185,5 +184,5 @@ for i in range(2):
 ax[0,0].legend()
       
 fig.tight_layout()
-plt.savefig(os.path.join(outpath_figs, 'K_comparison2.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_comparison2.pdf'), dpi=300)
 plt.show()
