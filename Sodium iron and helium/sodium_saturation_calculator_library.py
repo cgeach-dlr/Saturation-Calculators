@@ -65,7 +65,7 @@ def get_natural_absorption_line(j, k):
     #Check that sufficient spectral resolution is used to resolve the
     # absorption line
     
-    if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
+    if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve absorption' + 
               'line.')
         return
@@ -380,4 +380,5 @@ def get_wind_and_temp_errors(Temp_Na, nu_Ls, Delta_nu_L, N_L, z, T_atm, alpha_L,
                              full_output=1)
     
     return res_sat, res_no_sat, Ps
+
 
