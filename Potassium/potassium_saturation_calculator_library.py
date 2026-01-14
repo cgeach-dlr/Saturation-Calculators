@@ -75,7 +75,7 @@ def get_natural_absorption_line(iso, j, k):
     #Need to make sure sufficient resolution is used to resolve absorption
     # line
     
-    if nu_shifts[1]-nu_shifts[0] > Delta_nu_n / 5.:
+    if delta_nu > Delta_nu_n / 5.:
         print('Error: insufficient spectral resolution to resolve' +
               ' absorption line.')
         return
@@ -486,6 +486,7 @@ def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
                                            lineshape)) / sat_spectrum
     
     return model_resid 
+
 
 
 
