@@ -14,8 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath_data = ''
-outpath_figs = ''
+outpath = ''
   
 #Calculates the degree of saturation for a range of laser linewidths, following 
 # the Megie and VDG approaches.
@@ -56,8 +55,6 @@ for i in range(len(Delta_nu_Ls)):
     sats_Megie_Delta_nu_Ls2[i] = sat_lib.get_saturation_megie(z, alpha_L, t_L, 
                                   sigma_eff2, N_L, T_atm)
 
-
-
 #Calculates the spectrum of the degree of saturation, following the Megie and
 #  VDG approaches.
 
@@ -71,7 +68,6 @@ for i in range(len(nu_Ls)):
     sats_vdG_nu_Ls[i] = sat_lib.get_saturation(nu_L, Delta_nu_L, N_L, z,  alpha_L,
                   T_atm, t_L, nt, delta_t, Temp_layer, ratio=True)
     
-#nu_Ls_Megie = (np.arange(601) - 300)*1e7
 nu_Ls_Megie = (np.arange(301) - 150)*2e7
 sats_Megie_nu_Ls = np.zeros(len(nu_Ls_Megie))
 sats_Megie_nu_Ls2 = np.zeros(len(nu_Ls_Megie))
@@ -107,18 +103,19 @@ ax[1].plot(nu_Ls*1e-6, 100*sats_vdG_nu_Ls)
 ax[1].plot(nu_Ls_Megie*1e-6, 100*sats_Megie_nu_Ls)
 ax[1].plot(nu_Ls_Megie*1e-6, 100*sats_Megie_nu_Ls2)
 
-ax[1].set_xlabel('Central laser frequency(MHz)')
+ax[1].set_xlabel('Central laser frequency (MHz)')
 ax[1].grid(True)
 
-plt.savefig(os.path.join(outpath_figs, 'Simple.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Simple.pdf'), dpi=300)
 
 Delta_nu_L_data = np.vstack((Delta_nu_Ls*1e-6, 100*sats_vdG_Delta_nu_Ls, 
                     100*sats_Megie_Delta_nu_Ls, 100*sats_Megie_Delta_nu_Ls2))
-np.savetxt(os.path.join(outpath_data, 'Simple_Delta_nu_L_data.txt'),
+np.savetxt(os.path.join(outpath, 'Simple_Delta_nu_L_data.txt'),
            Delta_nu_L_data.T, delimiter=',')
 
 nu_L_data = np.vstack((nu_Ls*1e-6, 100*sats_vdG_nu_Ls, 100*sats_Megie_nu_Ls,
                        100*sats_Megie_nu_Ls2))
-np.savetxt(os.path.join(outpath_data, 'Simple_nu_L_data.txt'), nu_L_data.T,
+np.savetxt(os.path.join(outpath, 'Simple_nu_L_data.txt'), nu_L_data.T,
            delimiter=',')
+
 
