@@ -403,10 +403,7 @@ def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
     # returned, along with the average temperature over the potassium 
     # layer.
 
-    #The obs_path field must be updated to point to where the data is 
-    # saved locally.    
-  
-    obs_path = ''
+    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
     fnames = os.listdir(obs_path)
   
     Res_array = []
@@ -489,4 +486,5 @@ def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
                                            lineshape)) / sat_spectrum
     
     return model_resid 
+
 
