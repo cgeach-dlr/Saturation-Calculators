@@ -14,7 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath = os.path.join(os.path.dirname(os.getcwd()), 'Figs and Data')
+outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
 Res_gauss_data, Temps_gauss = k_lib.get_lidar_residuals('gauss')
 Res_lorentzian_data, Temps_lorentzian = k_lib.get_lidar_residuals('lorentzian')
