@@ -90,7 +90,7 @@ def get_combined_absorption_line():
     # accounting for the differing relative abundances of the j=1 and j=2
     # ground-states (given by (2j+1)/8, respectively.)
     
-    combined_line = np.zeros(len(nu_shifts))
+    combined_line = np.zeros(nv)
     for iso in range(2):
         for i in range(2):
             for k in range(2):
@@ -149,7 +149,7 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
               ' laser line.')
         return 
       
-    L_jk = np.zeros((2, 2, 2, len(nu_shifts)))
+    L_jk = np.zeros((2, 2, 2, nv))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for iso in range(2):
@@ -489,3 +489,4 @@ def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
                                            lineshape)) / sat_spectrum
     
     return model_resid 
+
