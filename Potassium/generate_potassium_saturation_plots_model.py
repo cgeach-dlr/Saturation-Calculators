@@ -64,8 +64,9 @@ fig.tight_layout()
 plt.savefig(os.path.join(outpath, 'K_spectrum.pdf'), dpi=300)
 plt.show()
 
-Data_K_spectrum_a = np.vstack((lambda_shifts*1e12, lines[0], lines[1], lines[2],
-                            lines[3], lines[4], lines[5], lines[6], lines[7]))
+Data_K_spectrum_a = np.vstack((lambda_shifts*1e12, lines[0], lines[1],
+                               lines[2], lines[3], lines[4], lines[5],
+                               lines[6], lines[7]))
 np.savetxt(os.path.join(outpath, 'K_spectrum_a.txt'), Data_K_spectrum_a.T,
            delimiter=',')
 
@@ -96,12 +97,16 @@ Delta_nu_L = 20e6 #Hz
 
 for i in range(len(nu_Ls)):
     nu_L = nu_Ls[i]    
-    sats_lorentzian_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
-                       T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
-                       Temp_K, 'lorentzian', ratio_beam=True)
-    sats_gauss_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
-                       T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
-                       Temp_K, 'gauss', ratio_beam=True)
+    sats_lorentzian_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L,
+                                                       z, T_atm, alpha_L,
+                                                       alpha_T, t_L, nt, 
+                                                       delta_t, delta_r,
+                                                       Temp_K, 'lorentzian',
+                                                       ratio_beam=True)
+    sats_gauss_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z, 
+                                                  T_atm, alpha_L, alpha_T, t_L,
+                                                  nt, delta_t, delta_r, Temp_K,
+                                                  'gauss', ratio_beam=True)
 
 #Calculates the degree of saturation as a function of laser pulse energy.      
 Es = 10**np.arange(0, 2.1, 0.2) #mJ
@@ -113,12 +118,15 @@ sats_gauss_E = np.zeros(len(Es))
 for i in range(len(Es)):
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
     sats_lorentzian_E[i] = k_lib.get_saturation_beam(0, Delta_nu_L, N_L, z,
-                          T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
-                          Temp_K, 'lorentzian', ratio_beam=True)
+                                                     T_atm, alpha_L, alpha_T,
+                                                     t_L, nt, delta_t, delta_r,
+                                                     Temp_K, 'lorentzian',
+                                                     ratio_beam=True)
     sats_gauss_E[i] = k_lib.get_saturation_beam(0, Delta_nu_L, N_L, z, T_atm,
-                          alpha_L, alpha_T, t_L, nt, delta_t, delta_r, Temp_K,
-                          'gauss', ratio_beam=True)
-      
+                                                alpha_L, alpha_T, t_L, nt,
+                                                delta_t, delta_r, Temp_K,
+                                                'gauss', ratio_beam=True)
+
 lambda_Ls = -nu_Ls / k_lib.nu0 * k_lib.lamb0
     
 fig,ax = plt.subplots(1,2, figsize=(16,8))
@@ -180,23 +188,24 @@ lambda_Ls_errs = np.arange(1.55, -1.52, -0.18)*1e-12
 nu_Ls_errs = -k_lib.c_light / k_lib.lamb0**2 * lambda_Ls_errs  
 
 for i in range(len(Es)):
-    print(i)
     delta_t = min(1.5 * 100 / Es[i], 10)
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
     Res_lorentzian_200 = k_lib.get_wind_and_temp_errors(200, nu_Ls_errs,
                                                         Delta_nu_L, N_L, z,
-                                                        T_atm, alpha_L, alpha_T,
-                                                        t_L, nt, delta_t,
-                                                        delta_r, 'lorentzian')
+                                                        T_atm, alpha_L,
+                                                        alpha_T, t_L, nt,
+                                                        delta_t, delta_r,
+                                                        'lorentzian')
     Res_gauss_200 = k_lib.get_wind_and_temp_errors(200, nu_Ls_errs, Delta_nu_L,
                                                    N_L, z, T_atm, alpha_L,
                                                    alpha_T, t_L, nt, delta_t,
                                                    delta_r, 'gauss')
     Res_lorentzian_150 = k_lib.get_wind_and_temp_errors(150, nu_Ls_errs,
                                                         Delta_nu_L, N_L, z,
-                                                        T_atm, alpha_L, alpha_T,
-                                                        t_L, nt, delta_t,
-                                                        delta_r, 'lorentzian')
+                                                        T_atm, alpha_L,
+                                                        alpha_T, t_L, nt,
+                                                        delta_t, delta_r,
+                                                        'lorentzian')
     Res_gauss_150 = k_lib.get_wind_and_temp_errors(150, nu_Ls_errs, Delta_nu_L,
                                                    N_L, z, T_atm, alpha_L, 
                                                    alpha_T, t_L, nt, delta_t,
@@ -271,5 +280,3 @@ np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_c.txt'),
 Data_K_measurements_d = np.vstack((Es, w_err_200_lorentzian, w_err_200_gauss))
 np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_d.txt'),
            Data_K_measurements_d.T, delimiter=',')
-
-
