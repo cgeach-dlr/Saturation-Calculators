@@ -410,7 +410,7 @@ def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
     Temps = np.zeros(5)
     
     for i in range(5):
-        fname = os.path.join(obs_path, fnames[n])
+        fname = os.path.join(obs_path, fnames[i])
         df = nc.Dataset(fname)
 
         counts = np.array(df.variables['counts'][:,:,:])
@@ -486,5 +486,6 @@ def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
                                            lineshape)) / sat_spectrum
     
     return model_resid 
+
 
 
