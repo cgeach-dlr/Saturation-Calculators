@@ -40,7 +40,6 @@ Temp_He = 1000 #K
 Doppler_spectrum = he_lib.get_total_scattering_cross_section_spectrum(Temp_He)
 
 for i in range(len(nu_Ls)):
-    print(i)
     nu_L = nu_Ls[i]    
     sats_vdG_nu_Ls[i] = he_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
                           T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
@@ -49,7 +48,6 @@ for i in range(len(nu_Ls)):
     sigma_eff = np.sum(g_L * Doppler_spectrum) / np.sum(g_L)
     sats_Megie_nu_Ls[i] = he_lib.get_saturation_megie(z, alpha_L, t_L,
                           sigma_eff, N_L, T_atm)
-
 
 #Calculates the saturation-induced density, temperature, and wind biases as a
 # function of laser pulse energy
@@ -115,8 +113,3 @@ He_temp_and_wind_biases_data = np.vstack((Es, 100*dens_err_200, T_err_200,
                                           w_err_200))
 np.savetxt(os.path.join(outpath, 'He_temp_and_wind_biases.txt'),
            He_temp_and_wind_biases_data.T, delimiter=',')
-
-
-
-
-
