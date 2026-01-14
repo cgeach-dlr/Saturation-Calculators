@@ -51,8 +51,7 @@ class HandlerTupleVertical(HandlerTuple):
         return leglines
 
 #Designate an output location for figure data and plots
-outpath_data = ''
-outpath_figs = ''
+outpath = ''
 
 #Calculates the spectrum of the degree of saturation, following the Megie and
 # VDG approaches.
@@ -172,18 +171,17 @@ ax[1].yaxis.set_label_position("right")
 ax[1].yaxis.tick_right()
 fig.tight_layout()
 
-plt.savefig(os.path.join(outpath_figs, 'Fe.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Fe.pdf'), dpi=300)
 
 Fe_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_nu_Ls_gauss,
                               100*sats_vdG_nu_Ls_lorentz,
                               100*sats_Megie_nu_Ls))
-np.savetxt(os.path.join(outpath_data, 'Fe_saturation.txt'),
+np.savetxt(os.path.join(outpath, 'Fe_saturation.txt'),
            Fe_spectrum_data.T, delimiter=',')
 
 Fe_temp_and_wind_biases_data = np.vstack((Es, dens_err_200_gauss,
                                           dens_err_200_lorentz,
                                           T_err_200_gauss,
                                           T_err_200_lorentz))
-np.savetxt(os.path.join(outpath_data, 'Fe_temp_and_wind_biases.txt'),
+np.savetxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
            Fe_temp_and_wind_biases_data.T, delimiter=',')
-
