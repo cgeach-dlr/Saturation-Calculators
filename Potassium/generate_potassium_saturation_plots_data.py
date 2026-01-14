@@ -28,13 +28,13 @@ plt.xlabel('Wavelength (pm)')
 plt.ylabel('Relative residuals (%)') 
 plt.axhline(0, c='k')
 
-plt.savefig(os.path.join(outpath_figs, 'K_measurements.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_measurements.pdf'), dpi=300)
 plt.show()
 
 lineshapes = ['lorentzian', 'gauss']
 
 lambda_Ls = np.arange(1.55, -1.52, -0.18)*1e-12 #m
-nu_Ls = -c_light / lamb0**2 * lambda_Ls
+nu_Ls = -k_lib.c_light / k_lib.lamb0**2 * lambda_Ls
 sats_gauss = np.zeros(len(nu_Ls))
 sats_lorentzian = np.zeros(len(nu_Ls))
 
@@ -167,7 +167,7 @@ for i in range(2):
                                        100*np.mean(data_resid, axis=0),
                 100*(np.mean(data_resid, axis=0) + np.std(data_resid, axis=0)),
                 100*(np.mean(data_resid, axis=0) - np.std(data_resid, axis=0))))
-        np.savetxt(os.path.join(outpath_data, 'K_comparison2_' + 
+        np.savetxt(os.path.join(outpath, 'K_comparison2_' + 
                                 figure_parts[i,j] + '.txt'),
                                 Data_K_comparison.T, delimiter=',')
         
