@@ -14,7 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath = ''
+outpath = os.path.join(os.path.dirname(os.getcwd()), 'Figs and Data')
   
 #Calculates the degree of saturation for a range of laser linewidths, following 
 # the Megie and VDG approaches.
@@ -117,5 +117,6 @@ nu_L_data = np.vstack((nu_Ls*1e-6, 100*sats_vdG_nu_Ls, 100*sats_Megie_nu_Ls,
                        100*sats_Megie_nu_Ls2))
 np.savetxt(os.path.join(outpath, 'Simple_nu_L_data.txt'), nu_L_data.T,
            delimiter=',')
+
 
 
