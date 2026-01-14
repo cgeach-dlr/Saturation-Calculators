@@ -13,10 +13,6 @@ font = {'weight' : 'normal',
 
 matplotlib.rc('font', **font)
 
-c_light = 2.99792458 * 10**8 #m/s
-lamb0 =  770.10835 * 10**-9 #m, in vacuum
-nu0 = c_light / lamb0
-
 #Designate an output location for figure data and plots
 outpath = ''
 
