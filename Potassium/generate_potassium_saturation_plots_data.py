@@ -66,7 +66,7 @@ for i in range(5):
                                                           Temps_lorentzian[i],
                                                           'lorentzian'))
     
-names = ['25-27 January 2010', '27-28 January 2011', '24-26 February 2011',
+dates = ['25-27 January 2010', '27-28 January 2011', '24-26 February 2011',
          '14-15 January 2012', '30-31 January 2012']
 lineshapes = ['lorentzian', 'gauss']
 lineshape_names = ['Lorentzian', 'Gauss']
@@ -104,7 +104,7 @@ for i in range(3):
         data_resid = Res_data[i]
         model_resid = Res_model[i]
         
-        ax[i,j].set_title(names[i] + ' -- ' + lineshape_names[j] + ' profile')
+        ax[i,j].set_title(dates[i] + ' -- ' + lineshape_names[j] + ' profile')
         ax[i,j].plot(lambda_Ls * 1e12, 100*np.mean(data_resid, axis=0), 'k',
                                                      label='Observed residuals')
         ax[i,j].plot(lambda_Ls * 1e12, 100*(np.mean(data_resid, axis=0) +
@@ -151,7 +151,7 @@ for i in range(2):
         data_resid = Res_data[n]
         model_resid = Res_model[n]
         
-        ax[i,j].set_title(names[n] + ' -- ' + lineshape_names[j] + ' profile')
+        ax[i,j].set_title(dates[n] + ' -- ' + lineshape_names[j] + ' profile')
         ax[i,j].plot(lambda_Ls * 1e12, 100*np.mean(data_resid, axis=0), 'k',
                                               label='Observed residuals')
         ax[i,j].plot(lambda_Ls * 1e12, 100*(np.mean(data_resid, axis=0) +
