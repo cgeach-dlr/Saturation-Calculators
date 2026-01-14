@@ -65,16 +65,17 @@ def get_natural_absorption_line(iso):
               ' line.')
         return
         
-    natural_absorption_line = (absorb_coeff * f_D / np.pi * 
-                       Delta_nu_n / 2 / ((nu_shifts - nu_isos[iso])**2 +
-                                         (Delta_nu_n/2)**2))
+    natural_absorption_line = (absorb_coeff * f_D / np.pi
+                               *  Delta_nu_n / 2 
+                               / ((nu_shifts - nu_isos[iso])**2
+                                  + (Delta_nu_n/2)**2))
     return natural_absorption_line
 
 def get_combined_absorption_line():
     #Returns the combined scattering cross-section spectrum of the absorption
     # line for all isotpes, accounting for relative abundances
     
-    combined_line = np.zeros(len(nu_shifts))
+    combined_line = np.zeros(nv)
     for iso in range(4):
         combined_line += f_isos[iso] * get_natural_absorption_line(iso)
             
@@ -86,8 +87,8 @@ def get_temperature_spectrum(Temp_Ca):
     # Doppler shift
     
     sig_D_temp = sig_D * np.sqrt(Temp_Ca)
-    return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2/
-                                                         (2*sig_D_temp**2))
+    return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2 
+                                                      / (2*sig_D_temp**2))
 
 def get_doppler_broadened_spectrum_complete(Temp_Ca):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
@@ -101,14 +102,14 @@ def g_L_lorentzian(nu_L, Delta_nu_L):
     #Returns a laser profile with a Lorentzian profile
     
     return 2 / np.pi / Delta_nu_L * (Delta_nu_L/2)**2 / ((nu_shifts - nu_L)**2
-                                     + (Delta_nu_L/2)**2)
+                                                          + (Delta_nu_L/2)**2)
 
 def g_L_gauss(nu_L, Delta_nu_L):
     #Returns a laser profile with a Gaussian profile
     
     sigma_L = Delta_nu_L / 2.355
-    return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2/
-                                                             (2 * sigma_L**2))
+    return 1 / sigma_L / np.sqrt(2 * np.pi) * np.exp(-(nu_shifts - nu_L)**2
+                                                     / (2 * sigma_L**2))
 
 def get_laser_pulseshape(nu_L, Delta_nu_L, lineshape):
   
@@ -134,7 +135,7 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
               ' laser line.')
         return                
         
-    L_jk = np.zeros((4, len(nu_shifts)))
+    L_jk = np.zeros((4, nv))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for iso in range(4):
@@ -143,12 +144,12 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
         L_jk[iso,:] = convolve(laser_spectrum, alpha_jk)
     return L_jk
 
-def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
+def get_total_scattering_cross_section_spectrum(Temp_Ca, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
     # spectrum, accounting for the laser lineshape
                                                     
-    temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_K)
+    temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_Ca)
     if Delta_nu_L > 10e6:
         laser_spectrum = get_laser_pulseshape(0, Delta_nu_L, lineshape)
         sigma_tot = convolve(laser_spectrum, temp_spectrum)
@@ -156,12 +157,12 @@ def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
     else:
         return temp_spectrum   
 
-def get_total_scattering_cross_section(Temp_K, nu_L=0, Delta_nu_L=100e6,
+def get_total_scattering_cross_section(Temp_Ca, nu_L=0, Delta_nu_L=100e6,
                                        lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section for
     # a given laser frequency
     
-    sigma_tot = get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L,
+    sigma_tot = get_total_scattering_cross_section_spectrum(Temp_Ca, Delta_nu_L,
                                                             lineshape)
     f_sigma = si.interp1d(nu_shifts, sigma_tot)
     return f_sigma(nu_L)
