@@ -80,7 +80,7 @@ def get_combined_absorption_line():
     #for the differing relative abundances of the j=1 and j=2 ground-states 
     # (given by (2j+1)/8, respectively.)
     
-    combined_line = np.zeros(len(nu_shifts))
+    combined_line = np.zeros(nv)
     for i in range(2):
         for k in range(3):
             j = i+1
@@ -142,7 +142,7 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
               ' laser line.')
         return
                                        
-    L_jk = np.zeros((2, 3, len(nu_shifts)))
+    L_jk = np.zeros((2, 3, nv))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for j in range(2):
@@ -380,3 +380,4 @@ def get_wind_and_temp_errors(Temp_Na, nu_Ls, Delta_nu_L, N_L, z, T_atm, alpha_L,
                              full_output=1)
     
     return res_sat, res_no_sat, Ps
+
