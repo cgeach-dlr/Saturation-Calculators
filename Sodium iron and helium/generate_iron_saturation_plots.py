@@ -51,7 +51,7 @@ class HandlerTupleVertical(HandlerTuple):
         return leglines
 
 #Designate an output location for figure data and plots
-outpath = ''
+outpath = os.path.join(os.path.dirname(os.getcwd()), 'Figs and Data')
 
 #Calculates the spectrum of the degree of saturation, following the Megie and
 # VDG approaches.
@@ -185,3 +185,4 @@ Fe_temp_and_wind_biases_data = np.vstack((Es, dens_err_200_gauss,
                                           T_err_200_lorentz))
 np.savetxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
            Fe_temp_and_wind_biases_data.T, delimiter=',')
+
