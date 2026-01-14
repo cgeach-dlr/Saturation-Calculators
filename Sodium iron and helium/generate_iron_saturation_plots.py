@@ -80,7 +80,6 @@ Doppler_spectrum = fe_lib.get_total_scattering_cross_section_spectrum(Temp_Fe,
                                                                       line)
 
 for i in range(len(nu_Ls)):
-    print('Task 1: ', i)
     nu_L = nu_Ls[i]    
     sats_vdG_nu_Ls_gauss[i] = fe_lib.get_saturation_beam(line, nu_L,
                         Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T, t_L, nt,
@@ -115,7 +114,6 @@ T_err_200_lorentz = np.zeros(len(Es))
 w_err_200_lorentz = np.zeros(len(Es))
 
 for i in range(len(Es)):
-    print('Task 2: ' , i)
     N_L = fe_lib.N_L_from_pulse_energy(Es[i], line)
     Res_gauss = fe_lib.get_wind_and_temp_errors(line, 200, nu_Ls_errs,
                                 Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
@@ -185,5 +183,3 @@ Fe_temp_and_wind_biases_data = np.vstack((Es, dens_err_200_gauss,
                                           T_err_200_lorentz))
 np.savetxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
            Fe_temp_and_wind_biases_data.T, delimiter=',')
-
-
