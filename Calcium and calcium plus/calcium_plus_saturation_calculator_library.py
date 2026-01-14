@@ -74,26 +74,26 @@ def get_combined_absorption_line():
     #Returns the combined scattering cross-section spectrum of the absorption
     # line for all isotpes, accounting for relative abundances
     
-    combined_line = np.zeros(len(nu_shifts))
+    combined_line = np.zeros(nv)
     for iso in range(4):
         combined_line += f_isos[iso] * get_natural_absorption_line(iso)
             
     return combined_line
 
-def get_temperature_spectrum(Temp_Ca): 
+def get_temperature_spectrum(Temp_Ca_plus): 
     #Returns the Doppler-broadened distribution for a given temperature, i.e.
     # the relative populations of atoms with a corresponding velocity-induced
     # Doppler shift
     
-    sig_D_temp = sig_D * np.sqrt(Temp_Ca)
+    sig_D_temp = sig_D * np.sqrt(Temp_Ca_plus)
     return 1 / np.sqrt(2*np.pi) / sig_D_temp * np.exp(-nu_shifts**2/
                                                          (2*sig_D_temp**2))
 
-def get_doppler_broadened_spectrum_complete(Temp_Ca):
+def get_doppler_broadened_spectrum_complete(Temp_Ca_plus):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
     # complete absorption line
     
-    temp_spectrum = get_temperature_spectrum(Temp_Ca)
+    temp_spectrum = get_temperature_spectrum(Temp_Ca_plus)
     combined_spectrum = get_combined_absorption_line()
     return convolve(combined_spectrum, temp_spectrum)
 
@@ -133,7 +133,7 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
               ' laser line.')
         return
         
-    L_jk = np.zeros((4, len(nu_shifts)))
+    L_jk = np.zeros((4, nv))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for iso in range(4):
@@ -142,11 +142,11 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
         L_jk[iso,:] = convolve(laser_spectrum, alpha_jk)
     return L_jk
                                        
-def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
+def get_total_scattering_cross_section_spectrum(Temp_Ca_plus, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
     # spectrum, accounting for the laser lineshape
-    temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_K)
+    temp_spectrum = get_doppler_broadened_spectrum_complete(Temp_Ca_plus)
     if Delta_nu_L > 10e6:
         laser_spectrum = get_laser_pulseshape(0, Delta_nu_L, lineshape)
         sigma_tot = convolve(laser_spectrum, temp_spectrum)
@@ -154,12 +154,12 @@ def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
     else:
         return temp_spectrum   
 
-def get_total_scattering_cross_section(Temp_K, nu_L=0, Delta_nu_L=100e6,
+def get_total_scattering_cross_section(Temp_Ca_plus, nu_L=0, Delta_nu_L=100e6,
                                        lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section for
     # a given laser frequency
     
-    sigma_tot = get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L,
+    sigma_tot = get_total_scattering_cross_section_spectrum(Temp_Ca_plus, Delta_nu_L,
                                                             lineshape)
     f_sigma = si.interp1d(nu_shifts, sigma_tot)
     return f_sigma(nu_L)
@@ -197,12 +197,12 @@ def get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L, T_atm):
                     * (np.exp(-(t_L / tau_R) * (1 + tau_R / t_s))-1))
 
 def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
-                   delta_t=1, Temp_Ca=200, lineshape='gauss', ratio=False):
+                   delta_t=1, Temp_Ca_plus=200, lineshape='gauss', ratio=False):
     #Returns the expected degree of saturation, according to the VDG approach    
     
     N = N_t_laser(nt, delta_t, t_L, N_L) 
     Omega = np.pi / 4 * alpha_L**2    
-    temp_spectrum = get_temperature_spectrum(Temp_Ca)
+    temp_spectrum = get_temperature_spectrum(Temp_Ca_plus)
 
     #Find the index for which 99.999% of photons have been accounted for, in
     # order to abridge the calculation (the DES can be solved analytically for
@@ -276,7 +276,7 @@ def gauss_1D(alpha_L, r):
 
 def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
                         t_L=10, nt=50, delta_t=1, delta_r = 5 * 10**-6,
-                        Temp_Ca=200, lineshape='gauss', ratio_beam=True):
+                        Temp_Ca_plus=200, lineshape='gauss', ratio_beam=True):
     #Returns the expected degree of saturation, according to the VDG approach,
     # averaged over a Gaussian beam profile over the field-of-view of the
     # telescope.
@@ -298,8 +298,8 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
     
     for i in range(len(r)):
         sats[:,i] = get_saturation(nu_L, Delta_nu_L, beam[i], z, alpha_L,
-                                   T_atm, t_L, nt, delta_t, Temp_Ca, lineshape,
-                                   ratio=False)
+                                   T_atm, t_L, nt, delta_t, Temp_Ca_plus,
+                                   lineshape, ratio=False)
     
     #If ratio_beam == True, the degree of saturation is returned. If
     # ratio_beam != True, the total number of emitted photons in the case with 
@@ -310,7 +310,7 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
     else:
         return np.sum(sats[0,:] * r)/Omega, np.sum(sats[1,:] * r)/Omega
     
-def get_wind_and_temp_errors(Temp_Ca, nu_Ls, Delta_nu_L, N_L, z, T_atm,
+def get_wind_and_temp_errors(Temp_Ca_plus, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              alpha_L, alpha_T, t_L=10, nt=50, delta_t=1,
                              delta_r=1e-5, lineshape='gauss'):
     #Determines the retrieved spectrum, with and without saturation, at the
@@ -319,15 +319,15 @@ def get_wind_and_temp_errors(Temp_Ca, nu_Ls, Delta_nu_L, N_L, z, T_atm,
     # LOS wind speed)
     
     Ps = np.zeros((2,len(nu_Ls)))
-    norm = get_total_scattering_cross_section(Temp_Ca, 0)
+    norm = get_total_scattering_cross_section(Temp_Ca_plus, 0)
     
     for i in range(len(nu_Ls)):
         nu_L = nu_Ls[i]
         Ps[:,i] = get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L,
                                       alpha_T, t_L, nt, delta_t, delta_r,
-                                      Temp_Ca, lineshape, False)
+                                      Temp_Ca_plus, lineshape, False)
     
-    p = np.array([np.max(Ps)/norm, Temp_Ca, 1])
+    p = np.array([np.max(Ps)/norm, Temp_Ca_plus, 1])
     res_sat = opt.leastsq(fit_wind_and_temp, p,
                           args=(nu_Ls, Ps[0,:], Delta_nu_L,lineshape),
                           full_output=1)
@@ -336,6 +336,7 @@ def get_wind_and_temp_errors(Temp_Ca, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
 
     return res_sat, res_no_sat, Ps
+
 
 
 
