@@ -148,7 +148,7 @@ def get_effective_absorption_lines(line, nu_L=0, Delta_nu_L = 100*10**6,
               ' laser line.')
         return
         
-    L_jk = np.zeros((4, len(nu_shifts)))
+    L_jk = np.zeros((4, nv))
     laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     
     for i in range(4):
@@ -350,3 +350,4 @@ def get_wind_and_temp_errors(line, Temp_Fe, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
     
     return res_sat, res_no_sat, Ps
+
