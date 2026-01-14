@@ -16,7 +16,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath = os.path.join(os.path.dirname(os.getcwd()), 'Figs and Data')
+outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
 #Calculates the spectra of the degree of saturation for Figures 1 and 3
 
@@ -216,4 +216,5 @@ plt.xlabel('Pulse energy (mJ)')
 plt.grid(True)
 
 plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus4.jpg'), dpi=300)
+
 
