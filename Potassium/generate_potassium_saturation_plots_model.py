@@ -13,18 +13,13 @@ font = {'weight' : 'normal',
 
 matplotlib.rc('font', **font)
 
-c_light = 2.99792458 * 10**8 #m/s
-lamb0 =  770.10835 * 10**-9 #m, in vacuum
-nu0 = c_light / lamb0
-
 #Designate an output location for figure data and plots
-outpath_data = ''
-outpath_figs = ''
+outpath = ''
 
 #Calculates the intrinsic and effective spectra of the resonance lines. 
 delta_nu = 1e6
 nu_shifts = np.arange(-3*10**9, 3*10**9, delta_nu)
-lambda_shifts = -nu_shifts/nu0 * lamb0
+lambda_shifts = -nu_shifts / k_lib.nu0 * k_lib.lamb0
 
 lines = []
 for iso in range(2):
@@ -66,17 +61,17 @@ ax[0].set_ylabel('Scattering cross-section (m$^2$)')
 ax[1].set_ylabel('Effective scattering cross-section (m$^2$)')
 
 fig.tight_layout()
-plt.savefig(os.path.join(outpath_figs, 'K_spectrum.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_spectrum.pdf'), dpi=300)
 plt.show()
 
 Data_K_spectrum_a = np.vstack((lambda_shifts*1e12, lines[0], lines[1], lines[2],
                             lines[3], lines[4], lines[5], lines[6], lines[7]))
-np.savetxt(os.path.join(outpath_data, 'K_spectrum_a.txt'), Data_K_spectrum_a.T,
+np.savetxt(os.path.join(outpath, 'K_spectrum_a.txt'), Data_K_spectrum_a.T,
            delimiter=',')
 
 Data_K_spectrum_b = np.vstack((lambda_shifts*1e12,
                                k_lib.get_combined_absorption_line()))
-np.savetxt(os.path.join(outpath_data, 'K_spectrum_b.txt'), Data_K_spectrum_b.T,
+np.savetxt(os.path.join(outpath, 'K_spectrum_b.txt'), Data_K_spectrum_b.T,
            delimiter=',')
 
 #Calculates the spectrum of the degree of saturation.   
@@ -100,7 +95,6 @@ delta_t = 1.25 #ns
 Delta_nu_L = 20e6 #Hz
 
 for i in range(len(nu_Ls)):
-    print(i)
     nu_L = nu_Ls[i]    
     sats_lorentzian_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
                        T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
@@ -117,7 +111,6 @@ sats_lorentzian_E = np.zeros(len(Es))
 sats_gauss_E = np.zeros(len(Es))
 
 for i in range(len(Es)):
-    print(i)
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
     sats_lorentzian_E[i] = k_lib.get_saturation_beam(0, Delta_nu_L, N_L, z,
                           T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
@@ -126,7 +119,7 @@ for i in range(len(Es)):
                           alpha_L, alpha_T, t_L, nt, delta_t, delta_r, Temp_K,
                           'gauss', ratio_beam=True)
       
-lambda_Ls = -nu_Ls/nu0 * lamb0
+lambda_Ls = -nu_Ls / k_lib.nu0 * k_lib.lamb0
     
 fig,ax = plt.subplots(1,2, figsize=(16,8))
 
@@ -151,16 +144,16 @@ ax[1].legend()
 ax[1].grid(True)
 fig.tight_layout()
 
-plt.savefig(os.path.join(outpath_figs, 'K_saturation.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_saturation.pdf'), dpi=300)
 plt.show()
 
 Data_K_saturation_a = np.vstack((lambda_Ls*1e12, 100*sats_lorentzian_nuL,
                                  100*sats_gauss_nuL))
-np.savetxt(os.path.join(outpath_data, 'K_saturation_a.txt'),
+np.savetxt(os.path.join(outpath, 'K_saturation_a.txt'),
            Data_K_saturation_a.T, delimiter=',')
 
 Data_K_saturation_b = np.vstack((Es, 100*sats_lorentzian_E, 100*sats_gauss_E))
-np.savetxt(os.path.join(outpath_data, 'K_saturation_b.txt'),
+np.savetxt(os.path.join(outpath, 'K_saturation_b.txt'),
            Data_K_saturation_b.T, delimiter=',')
 
 #Calculates the saturation-induced temperature and wind errors as a function of
@@ -177,32 +170,37 @@ T_err_150_gauss = np.zeros(len(Es)) #K
 w_err_150_gauss = np.zeros(len(Es)) #m/s
 
 alpha_L = 270e-6 #radians
+alpha_T = 186e-6 #radians
+delta_r = 50e-6 #radians
 
 nt = 3000
 delta_t = 50 #ns
 
-lambda_Ls = np.arange(1.55, -1.52, -0.18)*1e-12
-nu_Ls = -c_light / lamb0**2 * lambda_Ls  
+lambda_Ls_errs = np.arange(1.55, -1.52, -0.18)*1e-12
+nu_Ls_errs = -k_lib.c_light / k_lib.lamb0**2 * lambda_Ls_errs  
 
 for i in range(len(Es)):
     print(i)
     delta_t = min(1.5 * 100 / Es[i], 10)
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
-    Res_lorentzian_200 = k_lib.get_wind_and_temp_errors(200, nu_Ls, Delta_nu_L,
-                                      N_L, z, T_atm, alpha_L, alpha_T, t_L, nt,
-                                      delta_t, delta_r, 'lorentzian')
-     
-    Res_gauss_200 = k_lib.get_wind_and_temp_errors(200, nu_Ls, Delta_nu_L, N_L,
-                                      z, T_atm, alpha_L, alpha_T, t_L, nt,
-                                      delta_t, delta_r, 'gauss')
-    
-    Res_lorentzian_150 = k_lib.get_wind_and_temp_errors(150, nu_Ls, Delta_nu_L,
-                                      N_L, z, T_atm, alpha_L, alpha_T, t_L, nt,
-                                      delta_t, delta_r, 'lorentzian')
-     
-    Res_gauss_150 = k_lib.get_wind_and_temp_errors(150, nu_Ls, Delta_nu_L, N_L,
-                                      z, T_atm, alpha_L, alpha_T, t_L, nt,
-                                      delta_t, delta_r, 'gauss')
+    Res_lorentzian_200 = k_lib.get_wind_and_temp_errors(200, nu_Ls_errs,
+                                                        Delta_nu_L, N_L, z,
+                                                        T_atm, alpha_L, alpha_T,
+                                                        t_L, nt, delta_t,
+                                                        delta_r, 'lorentzian')
+    Res_gauss_200 = k_lib.get_wind_and_temp_errors(200, nu_Ls_errs, Delta_nu_L,
+                                                   N_L, z, T_atm, alpha_L,
+                                                   alpha_T, t_L, nt, delta_t,
+                                                   delta_r, 'gauss')
+    Res_lorentzian_150 = k_lib.get_wind_and_temp_errors(150, nu_Ls_errs,
+                                                        Delta_nu_L, N_L, z,
+                                                        T_atm, alpha_L, alpha_T,
+                                                        t_L, nt, delta_t,
+                                                        delta_r, 'lorentzian')
+    Res_gauss_150 = k_lib.get_wind_and_temp_errors(150, nu_Ls_errs, Delta_nu_L,
+                                                   N_L, z, T_atm, alpha_L, 
+                                                   alpha_T, t_L, nt, delta_t,
+                                                   delta_r, 'gauss')
       
     
     T_err_200_lorentzian[i] = (Res_lorentzian_200[0][0][1] - 
@@ -255,22 +253,21 @@ ax[1,1].set_ylim(-32,1.5)
 ax[1,1].set_xlabel('Laser pulse energy (mJ)')
 ax[1,1].grid(True)
 
-plt.savefig(os.path.join(outpath_figs, 'K_temp_and_wind_biases.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'K_temp_and_wind_biases.pdf'), dpi=300)
 plt.show()
 
 Data_K_measurements_a = np.vstack((Es, T_err_150_lorentzian, T_err_150_gauss))
-np.savetxt(os.path.join(outpath_data, 'K_temp_and_wind_biases_a.txt'),
+np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_a.txt'),
            Data_K_measurements_a.T, delimiter=',')
 
 Data_K_measurements_b = np.vstack((Es, T_err_200_lorentzian, T_err_200_gauss))
-np.savetxt(os.path.join(outpath_data, 'K_temp_and_wind_biases_b.txt'),
+np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_b.txt'),
            Data_K_measurements_b.T, delimiter=',')
 
 Data_K_measurements_c = np.vstack((Es, w_err_150_lorentzian, w_err_150_gauss))
-np.savetxt(os.path.join(outpath_data, 'K_temp_and_wind_biases_c.txt'),
+np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_c.txt'),
            Data_K_measurements_c.T, delimiter=',')
 
 Data_K_measurements_d = np.vstack((Es, w_err_200_lorentzian, w_err_200_gauss))
-np.savetxt(os.path.join(outpath_data, 'K_temp_and_wind_biases_d.txt'),
-
+np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_d.txt'),
            Data_K_measurements_d.T, delimiter=',')
