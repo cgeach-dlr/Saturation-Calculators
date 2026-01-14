@@ -81,7 +81,7 @@ ax[0].plot(nu_Ls*1e-9, 100*sats_Megie_nu_Ls,
 
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Central laser frequency(GHz)')
+ax[0].set_xlabel('Central laser frequency (GHz)')
 ax[0].set_xlim(-3.5,3.5)
 ax[0].set_ylim(-0.5,9.5)
 ax[0].legend()
@@ -113,3 +113,4 @@ Na_temp_and_wind_biases_data = np.vstack((Es, dens_err_200, T_err_200,
                                           w_err_200))
 np.savetxt(os.path.join(outpath, 'Na_temp_and_wind_biases.txt'),
            Na_temp_and_wind_biases_data.T, delimiter=',')
+
