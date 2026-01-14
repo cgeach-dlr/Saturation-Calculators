@@ -14,8 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath_data = ''
-outpath_figs = ''
+outpath = ''
 
 #Calculates the spectrum of the degree of saturation.
 
@@ -68,7 +67,6 @@ T_err_200 = np.zeros(len(Es)) #K
 w_err_200 = np.zeros(len(Es)) #m/s
 
 for i in range(len(Es)):
-    print(i)
     N_L = he_lib.N_L_from_pulse_energy(Es[i])
     Res = he_lib.get_wind_and_temp_errors(Temp_He, nu_Ls_errs, Delta_nu_L,
                                           N_L, z, T_atm, alpha_L, alpha_T,
@@ -106,15 +104,16 @@ ax[1].yaxis.set_label_position("right")
 ax[1].yaxis.tick_right()
 fig.tight_layout()
 
-plt.savefig(os.path.join(outpath_figs, 'He.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'He.pdf'), dpi=300)
 
 He_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_nu_Ls, 
                               100*sats_Megie_nu_Ls))
-np.savetxt(os.path.join(outpath_data, 'He_saturation.txt'),
+np.savetxt(os.path.join(outpath, 'He_saturation.txt'),
            He_spectrum_data.T, delimiter=',')
 
 He_temp_and_wind_biases_data = np.vstack((Es, 100*dens_err_200, T_err_200,
                                           w_err_200))
-np.savetxt(os.path.join(outpath_data, 'He_temp_and_wind_biases.txt'),
+np.savetxt(os.path.join(outpath, 'He_temp_and_wind_biases.txt'),
            He_temp_and_wind_biases_data.T, delimiter=',')
+
 
