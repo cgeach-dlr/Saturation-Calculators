@@ -14,8 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath_data = ''
-outpath_figs = ''
+outpath = ''
 
 #Calculates the spectrum of the degree of saturation, following the Megie and
 # VDG approaches.
@@ -103,16 +102,14 @@ ax[1].yaxis.set_label_position("right")
 ax[1].yaxis.tick_right()
 fig.tight_layout()
 
-plt.savefig(os.path.join(outpath_figs, 'Na.pdf'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Na.pdf'), dpi=300)
 
 Na_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_nu_Ls,
                               100*sats_Megie_nu_Ls))
-np.savetxt(os.path.join(outpath_data, 'Na_saturation.txt'), Na_spectrum_data.T,
+np.savetxt(os.path.join(outpath, 'Na_saturation.txt'), Na_spectrum_data.T,
            delimiter=',')
 
 Na_temp_and_wind_biases_data = np.vstack((Es, dens_err_200, T_err_200,
                                           w_err_200))
-np.savetxt(os.path.join(outpath_data, 'Na_temp_and_wind_biases.txt'),
+np.savetxt(os.path.join(outpath, 'Na_temp_and_wind_biases.txt'),
            Na_temp_and_wind_biases_data.T, delimiter=',')
-
-
