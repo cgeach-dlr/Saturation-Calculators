@@ -299,7 +299,7 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
                                    T_atm, t_L, nt, delta_t, Temp_Ca, lineshape,
                                    ratio=False)
     
-    #If ratio_beam=True, the degree of saturation is returned. If 
+    #If ratio_beam == True, the degree of saturation is returned. If 
     # ratio_beam != True, the total number of emitted photons in the case with
     # saturation and without saturation are returned individually
     
