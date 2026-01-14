@@ -14,7 +14,7 @@ font = {'weight' : 'normal',
 matplotlib.rc('font', **font)
 
 #Designate an output location for figure data and plots
-outpath = os.path.join(os.path.dirname(os.getcwd()), 'Figs and Data')
+outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
 #Calculates the intrinsic and effective spectra of the resonance lines. 
 delta_nu = 1e6
@@ -271,4 +271,5 @@ np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_c.txt'),
 Data_K_measurements_d = np.vstack((Es, w_err_200_lorentzian, w_err_200_gauss))
 np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_d.txt'),
            Data_K_measurements_d.T, delimiter=',')
+
 
