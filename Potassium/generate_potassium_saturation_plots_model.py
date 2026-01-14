@@ -17,9 +17,7 @@ matplotlib.rc('font', **font)
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
 #Calculates the intrinsic and effective spectra of the resonance lines. 
-delta_nu = 1e6
-nu_shifts = np.arange(-3*10**9, 3*10**9, delta_nu)
-lambda_shifts = -nu_shifts / k_lib.nu0 * k_lib.lamb0
+lambda_shifts = -k_lib.nu_shifts / k_lib.nu0 * k_lib.lamb0
 
 lines = []
 for iso in range(2):
@@ -280,3 +278,4 @@ np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_c.txt'),
 Data_K_measurements_d = np.vstack((Es, w_err_200_lorentzian, w_err_200_gauss))
 np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_d.txt'),
            Data_K_measurements_d.T, delimiter=',')
+
