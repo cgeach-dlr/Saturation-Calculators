@@ -47,7 +47,6 @@ nu_22_41 = 151.6e6 #Hz
 nu_jk = np.array([[[nu_11_39, nu_12_39],[nu_21_39, nu_22_39]],
                   [[nu_11_41, nu_12_41],[nu_21_41, nu_22_41]]])
 
-
 #Hanle factors - assumed to be 1 here.
 q_jk = np.array([[1, 1], [1, 1]]) 
 
@@ -87,7 +86,7 @@ def get_natural_absorption_line(iso, j, k):
     return natural_absorption_line
 
 def get_combined_absorption_line():
-    #Returns the combined absorption line for the complete D_2 line,
+    #Returns the combined absorption line for the complete D_1 line,
     # accounting for the differing relative abundances of the j=1 and j=2
     # ground-states (given by (2j+1)/8, respectively.)
     
@@ -111,7 +110,7 @@ def get_temperature_spectrum(Temp_K):
 
 def get_doppler_broadened_spectrum_complete(Temp_K):
     #Returns the Doppler-broadened scattering cross-section spectrum of the
-    #complete D_2 line
+    #complete D_1 line
     
     temp_spectrum = get_temperature_spectrum(Temp_K)
     combined_spectrum = get_combined_absorption_line()
@@ -204,6 +203,7 @@ def plot_fit(params, nu_Ls, Delta_nu_L=100e6, lineshape='gauss'):
 
 def N_L_from_pulse_energy(E, nu=nu0): 
     #Returns the number of photons per pulse for a pulse energy in mJ
+  
     return E/(h_planck*nu) / 1000
 
 def N_t_laser(nt, delta_t, t_L, N_L):
@@ -252,8 +252,7 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     n_e2 = np.zeros((2, 2, nv, nt))
 
     P_s = 0
-    P_ns = 0
-             
+    P_ns = 0   
     
     L_jk = get_effective_absorption_lines(nu_L, Delta_nu_L, lineshape)
     
@@ -360,9 +359,9 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
                                    T_atm, t_L, nt, delta_t, Temp_K, lineshape,
                                    ratio=False)
     
-    #If ratio_beam=True, the degree of saturation is returned. If ratio_beam !=
-    # True, the total number of emitted photons in the case with saturation and
-    # without saturation are returned individually
+    #If ratio_beam == True, the degree of saturation is returned. If 
+    # ratio_beam != True, the total number of emitted photons in the 
+    # case with saturation and without saturation are returned individually
     
     if ratio_beam:
         return 1 - np.sum(sats[0,:] * r) / np.sum(sats[1,:] * r)
@@ -406,20 +405,14 @@ def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
 
     #The obs_path field must be updated to point to where the data is 
     # saved locally.    
+  
     obs_path = ''
     fnames = os.listdir(obs_path)
+  
     Res_array = []
     Temps = np.zeros(5)
     
     for i in range(5):
-        if i == 1:
-            n = 2
-        elif i == 2:
-            n = 1
-        else:
-            n = i
-        
-    
         fname = os.path.join(obs_path, fnames[n])
         df = nc.Dataset(fname)
 
