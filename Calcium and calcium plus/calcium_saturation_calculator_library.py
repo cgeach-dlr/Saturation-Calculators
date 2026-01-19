@@ -41,7 +41,7 @@ nu_isos = np.array([nu_40, nu_42, nu_44, nu_46])
 #Hanle factors - assumed to be 1 here.
 q_isos = np.array([1, 1, 1, 1]) 
 
-delta_nu = 5e6
+delta_nu = 5e5
 nu_shifts = np.arange(-3*10**9, 3*10**9, delta_nu)
 nv = len(nu_shifts)
 
