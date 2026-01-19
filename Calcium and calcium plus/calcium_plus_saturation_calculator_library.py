@@ -41,7 +41,7 @@ nu_isos = np.array([nu_40, nu_42, nu_44, nu_46])
 #Hanle factors - assumed to be 1 here.
 q_isos = np.array([1, 1, 1, 1]) 
 
-delta_nu = 4e6
+delta_nu = 7e5
 nu_shifts = np.arange(-3*10**9, 3*10**9, delta_nu)
 nv = len(nu_shifts)
 
@@ -336,6 +336,7 @@ def get_wind_and_temp_errors(Temp_Ca_plus, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              full_output=1)
 
     return res_sat, res_no_sat, Ps
+
 
 
 
