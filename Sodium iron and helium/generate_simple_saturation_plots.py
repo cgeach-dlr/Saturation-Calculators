@@ -99,11 +99,11 @@ ax[0].legend()
 ax[0].grid(True)
 
 ax[1].text(.51,.9, '(b)', transform=plt.gcf().transFigure)
-ax[1].plot(nu_Ls*1e-6, 100*sats_vdG_nu_Ls)
-ax[1].plot(nu_Ls_Megie*1e-6, 100*sats_Megie_nu_Ls)
-ax[1].plot(nu_Ls_Megie*1e-6, 100*sats_Megie_nu_Ls2)
+ax[1].plot(nu_Ls*1e-9, 100*sats_vdG_nu_Ls)
+ax[1].plot(nu_Ls_Megie*1e-9, 100*sats_Megie_nu_Ls)
+ax[1].plot(nu_Ls_Megie*1e-9, 100*sats_Megie_nu_Ls2)
 
-ax[1].set_xlabel('Laser frequency offset (MHz)')
+ax[1].set_xlabel('Laser frequency offset (GHz)')
 ax[1].grid(True)
 
 plt.savefig(os.path.join(outpath, 'Simple.pdf'), dpi=300)
@@ -117,6 +117,7 @@ nu_L_data = np.vstack((nu_Ls*1e-6, 100*sats_vdG_nu_Ls, 100*sats_Megie_nu_Ls,
                        100*sats_Megie_nu_Ls2))
 np.savetxt(os.path.join(outpath, 'Simple_nu_L_data.txt'), nu_L_data.T,
            delimiter=',')
+
 
 
 
