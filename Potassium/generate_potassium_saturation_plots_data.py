@@ -111,7 +111,7 @@ for i in range(3):
                                        Data_K_comparison.T, delimiter=',')
         
         if i == 2:        
-            ax[i,j].set_xlabel('Laser wavelength offset (pm)')
+            ax[i,j].set_xlabel('Wavelength offset (pm)')
         else:
             ax[i,j].set_xticks([])
     ax[i,0].set_ylabel('Relative residuals (%)') 
@@ -158,7 +158,7 @@ for i in range(2):
                                 Data_K_comparison.T, delimiter=',')
         
         if i == 1:        
-            ax[i,j].set_xlabel('Laser wavelength offset (pm)')
+            ax[i,j].set_xlabel('Wavelength offset (pm)')
         else:
             ax[i,j].set_xticks([])
     ax[i,0].set_ylabel('Relative residuals (%)') 
