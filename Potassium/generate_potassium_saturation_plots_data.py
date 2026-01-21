@@ -19,20 +19,6 @@ outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 Res_gauss_data, Temps_gauss = k_lib.get_lidar_residuals('gauss')
 Res_lorentzian_data, Temps_lorentzian = k_lib.get_lidar_residuals('lorentzian')
 
-lambda_Ls = np.arange(1.55, -1.52, -0.18)*1e-12
-fig = plt.figure(figsize=(12,7))
-for i in range(15):
-    plt.plot(lambda_Ls * 1e12, 100*Res_lorentzian_data[2][i])
-    
-plt.xlabel('Wavelength (pm)')
-plt.ylabel('Relative residuals (%)') 
-plt.axhline(0, c='k')
-
-plt.savefig(os.path.join(outpath, 'K_measurements.pdf'), dpi=300)
-plt.show()
-
-lineshapes = ['lorentzian', 'gauss']
-
 lambda_Ls = np.arange(1.55, -1.52, -0.18)*1e-12 #m
 nu_Ls = -k_lib.c_light / k_lib.lamb0**2 * lambda_Ls
 sats_gauss = np.zeros(len(nu_Ls))
@@ -68,14 +54,14 @@ for i in range(5):
     
 dates = ['25-27 January 2010', '27-28 January 2011', '24-26 February 2011',
          '14-15 January 2012', '30-31 January 2012']
-lineshapes = ['lorentzian', 'gauss']
+
 lineshape_names = ['Lorentzian', 'Gauss']
 
 fig = plt.figure(figsize=(12,7))
 for i in range(15):
     plt.plot(lambda_Ls * 1e12, 100*Res_lorentzian_data[2][i])
     
-plt.xlabel('Wavelength (pm)')
+plt.xlabel('Laser wavelength offset (pm)')
 plt.ylabel('Relative residuals (%)') 
 plt.axhline(0, c='k')
 
@@ -125,7 +111,7 @@ for i in range(3):
                                        Data_K_comparison.T, delimiter=',')
         
         if i == 2:        
-            ax[i,j].set_xlabel('Wavelength (pm)')
+            ax[i,j].set_xlabel('Laser wavelength offset (pm)')
         else:
             ax[i,j].set_xticks([])
     ax[i,0].set_ylabel('Relative residuals (%)') 
@@ -172,7 +158,7 @@ for i in range(2):
                                 Data_K_comparison.T, delimiter=',')
         
         if i == 1:        
-            ax[i,j].set_xlabel('Wavelength (pm)')
+            ax[i,j].set_xlabel('Laser wavelength offset (pm)')
         else:
             ax[i,j].set_xticks([])
     ax[i,0].set_ylabel('Relative residuals (%)') 
