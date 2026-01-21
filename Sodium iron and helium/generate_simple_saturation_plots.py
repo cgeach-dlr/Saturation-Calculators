@@ -83,7 +83,7 @@ for i in range(len(nu_Ls_Megie)):
     sats_Megie_nu_Ls2[i] = sat_lib.get_saturation_megie(z, alpha_L, t_L,
                                                        sigma_eff2, N_L, T_atm)
   
-fig,ax = plt.subplots(1,2, figsize=(15,7))
+fig,ax = plt.subplots(1,2, figsize=(16,8))
 
 ax[0].plot(Delta_nu_Ls*1e-6, 100*sats_vdG_Delta_nu_Ls,
            label='von der Gathen approach')
@@ -94,7 +94,7 @@ ax[0].plot(Delta_nu_Ls*1e-6, 100*sats_Megie_Delta_nu_Ls2,
 
 ax[0].text(.09,.9, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Laser line width (MHz)')
+ax[0].set_xlabel('Laser linewidth (MHz)')
 ax[0].legend()
 ax[0].grid(True)
 
@@ -103,7 +103,7 @@ ax[1].plot(nu_Ls*1e-6, 100*sats_vdG_nu_Ls)
 ax[1].plot(nu_Ls_Megie*1e-6, 100*sats_Megie_nu_Ls)
 ax[1].plot(nu_Ls_Megie*1e-6, 100*sats_Megie_nu_Ls2)
 
-ax[1].set_xlabel('Central laser frequency (MHz)')
+ax[1].set_xlabel('Laser frequency offset (MHz)')
 ax[1].grid(True)
 
 plt.savefig(os.path.join(outpath, 'Simple.pdf'), dpi=300)
@@ -117,6 +117,7 @@ nu_L_data = np.vstack((nu_Ls*1e-6, 100*sats_vdG_nu_Ls, 100*sats_Megie_nu_Ls,
                        100*sats_Megie_nu_Ls2))
 np.savetxt(os.path.join(outpath, 'Simple_nu_L_data.txt'), nu_L_data.T,
            delimiter=',')
+
 
 
 
