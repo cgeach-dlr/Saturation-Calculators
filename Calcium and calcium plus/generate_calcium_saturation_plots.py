@@ -94,7 +94,7 @@ plt.plot(lambda_Ls*1e12, 100*ca_sats_nu_Ls, label='Ca')
 plt.plot(lambda_Ls*1e12, 100*ca_plus_sats_nu_Ls, label='Ca+')
 plt.legend()
 plt.ylabel('Saturation percent')
-plt.xlabel('Central laser wavelength (pm)')
+plt.xlabel('Laser wavelength offset (pm)')
 
 plt.grid(True)
 
@@ -111,7 +111,7 @@ plt.plot(lambda_Ls*1e12, 100*ca_plus_sats_nu_Ls3, c='tab:orange',
          linestyle=':')
 plt.legend()
 plt.ylabel('Saturation percent')
-plt.xlabel('Central laser wavelength (pm)')
+plt.xlabel('Laser wavelength offset (pm)')
 
 plt.grid(True)
 
@@ -216,5 +216,6 @@ plt.xlabel('Pulse energy (mJ)')
 plt.grid(True)
 
 plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus4.jpg'), dpi=300)
+
 
 
