@@ -52,7 +52,7 @@ ax[0].plot(lambda_shifts*1e12, lines[7], linestyle='--',
 ax[1].plot(lambda_shifts*1e12, k_lib.get_combined_absorption_line())
 ax[0].legend(ncol=2)
 for i in range(2):
-    ax[i].set_xlabel('Wavelength (pm)')
+    ax[i].set_xlabel('Wavelength offset (pm)')
     ax[i].set_xlim(-1.1,.6)
     ax[i].set_xticks([-1,-0.5,0,0.5])
 ax[0].set_ylabel('Scattering cross-section (m$^2$)')
@@ -135,7 +135,7 @@ ax[0].plot(lambda_Ls*1e12, 100*sats_gauss_nuL, label='Gaussian profile')
 
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Central laser wavelength (pm)')
+ax[0].set_xlabel('Laser wavelength offset (pm)')
 ax[0].set_ylim(-4,87)
 ax[0].legend()
 ax[0].grid(True)
@@ -278,4 +278,5 @@ np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_c.txt'),
 Data_K_measurements_d = np.vstack((Es, w_err_200_lorentzian, w_err_200_gauss))
 np.savetxt(os.path.join(outpath, 'K_temp_and_wind_biases_d.txt'),
            Data_K_measurements_d.T, delimiter=',')
+
 
