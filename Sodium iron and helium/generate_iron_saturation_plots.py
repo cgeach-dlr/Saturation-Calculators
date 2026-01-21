@@ -131,7 +131,7 @@ for i in range(len(Es)):
                                 / Res_lorentz[1][0][0])
     T_err_200_lorentz[i] = Res_lorentz[0][0][1] - Res_lorentz[1][0][1]
 
-fig,ax = plt.subplots(1,2, figsize=(22,12))
+fig,ax = plt.subplots(1,2, figsize=(16,8))
 
 ax[0].plot(nu_Ls*1e-9, 100*sats_vdG_nu_Ls_gauss, label='von der Gathen ' + 
            'approach (Gauss profile)')
@@ -142,7 +142,7 @@ ax[0].plot(nu_Ls*1e-9, 100*sats_Megie_nu_Ls, label='Megie approach ' +
 
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Central laser frequency (GHz)')
+ax[0].set_xlabel('Laser frequency offset (GHz)')
 ax[0].set_ylim(-1,38)
 ax[0].legend()
 ax[0].grid(True)
@@ -160,8 +160,8 @@ ax[1].set_xlabel('Laser pulse energy (mJ)')
 ax[1].set_ylabel('Fractional density error \n Absolute temperature error (K)')
 
 ax[1].legend([(a0, a1), (a2,a3)],
-             ['Density error (gauss and lorentzian profile)',
-              'Temperature error (gauss and lorentzian profile)'],
+             ['Density error (gauss/lorentzian profile)',
+              'Temperature error (gauss/lorentzian profile)'],
            handler_map = {tuple : HandlerTupleVertical()})
 
 ax[1].grid(True)
@@ -183,3 +183,4 @@ Fe_temp_and_wind_biases_data = np.vstack((Es, dens_err_200_gauss,
                                           T_err_200_lorentz))
 np.savetxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
            Fe_temp_and_wind_biases_data.T, delimiter=',')
+
