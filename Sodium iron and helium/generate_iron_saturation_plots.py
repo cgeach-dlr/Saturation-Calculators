@@ -144,7 +144,7 @@ ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
 ax[0].set_xlabel('Laser frequency offset (GHz)')
 ax[0].set_ylim(-1,38)
-ax[0].legend()
+ax[0].legend(fontsize=16)
 ax[0].grid(True)
 
 ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
@@ -162,7 +162,7 @@ ax[1].set_ylabel('Fractional density error \n Absolute temperature error (K)')
 ax[1].legend([(a0, a1), (a2,a3)],
              ['Density error (gauss/lorentzian profile)',
               'Temperature error (gauss/lorentzian profile)'],
-           handler_map = {tuple : HandlerTupleVertical()})
+           handler_map = {tuple : HandlerTupleVertical()}, fontsize=16)
 
 ax[1].grid(True)
 ax[1].yaxis.set_label_position("right")
@@ -183,4 +183,5 @@ Fe_temp_and_wind_biases_data = np.vstack((Es, dens_err_200_gauss,
                                           T_err_200_lorentz))
 np.savetxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
            Fe_temp_and_wind_biases_data.T, delimiter=',')
+
 
