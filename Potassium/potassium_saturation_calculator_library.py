@@ -178,22 +178,21 @@ def get_total_scattering_cross_section(Temp_K, nu_L=0, Delta_nu_L=100e6,
     #Returns the total effective Doppler-broadened scattering cross-section
     # for a given laser frequency
     
-    sigma_tot = get_total_scattering_cross_section_spectrum(Temp_K,
-                                                            Delta_nu_L,
+    sigma_tot = get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L,
                                                             lineshape)
     f_sigma = si.interp1d(nu_shifts, sigma_tot)
     return f_sigma(nu_L)
 
 
-def fit_wind_and_temp(params, nu_Ls, ydata, Delta_nu_L=100e6,
-                                 lineshape='gauss'):
+def fit_wind_and_temp(params, nu_Ls, ydata, yerr=1, Delta_nu_L=100e6,
+                      lineshape='gauss'):
     #Fit function for a multi-frequency measurement of the scattering
     # cross-section spectrum, in terms of an amplitude (params[0]),
     # temperature (params[1]) and line-of-sight wind velocity (params[2])
     
     fit = params[0]*get_total_scattering_cross_section(params[1],
                 nu_Ls-params[2]/lamb0, Delta_nu_L, lineshape)
-    return fit - ydata
+    return (fit - ydata) / yerr
   
 def plot_fit(params, nu_Ls, Delta_nu_L=100e6, lineshape='gauss'):
     fit = params[0]*get_total_scattering_cross_section(params[1],
@@ -370,7 +369,7 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
     
 def get_wind_and_temp_errors(Temp_K, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              alpha_L, alpha_T, t_L=10, nt=50, delta_t=1,
-                             delta_r=1e-5, lineshape='gauss'):
+                             delta_r=1e-5, lineshape='gauss', noise=False):
     #Determines the retrieved spectrum, with and without saturation, at the
     # given measurement frequencies. Fits a spectrum based on the measurements
     # in each case, and returns the fit parameters (amplitude, temperature,
@@ -384,71 +383,119 @@ def get_wind_and_temp_errors(Temp_K, nu_Ls, Delta_nu_L, N_L, z, T_atm,
         Ps[:,i] = get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm,
                                       alpha_L, alpha_T, t_L, nt, delta_t,
                                       delta_r, Temp_K, lineshape, False)
-    
+    if noise:
+        noise_sat = Ps[0,:] / 100.
+        noise_no_sat = Ps[1,:] / 100.
+    else:
+        noise_sat = np.ones(len(nu_Ls))
+        noise_no_sat = np.ones(len(nu_Ls))
+        
     p = np.array([np.max(Ps)/norm, Temp_K, 1])
     res_sat = opt.leastsq(fit_wind_and_temp, p,
-                          args=(nu_Ls, Ps[0,:], Delta_nu_L, lineshape),
-                          full_output=1)
+                          args=(nu_Ls, Ps[0,:], noise_sat, Delta_nu_L,
+                                lineshape), full_output=1)
     res_no_sat = opt.leastsq(fit_wind_and_temp, p,
-                             args=(nu_Ls, Ps[1,:], Delta_nu_L, lineshape),
-                             full_output=1)
+                             args=(nu_Ls, Ps[1,:], noise_no_sat, Delta_nu_L,
+                                   lineshape), full_output=1)
     
     return res_sat, res_no_sat, Ps
   
-def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
+def get_lidar_res(lineshape, Delta_nu_L = 20e6):
     #Data analysis for the potassium lidar data. The data are filtered, 
     # background-subtracted, and normalized, then binned in time and
     # altitude. A three-parameter fit is made to the resulting spectrum
-    # of the scattering cross-section, and the residuals of that fit are
-    # returned, along with the average temperature over the potassium 
-    # layer.
-
+    # of the scattering cross-section, weighted by the respective measurement
+    # noise, and the residuals of that fit are returned, along with the average
+    # temperature over the potassium layer.
+    
     obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
     fnames = os.listdir(obs_path)
   
     Res_array = []
+    Noise_array = []
     Temps = np.zeros(5)
     
     for i in range(5):
-        fname = os.path.join(obs_path, fnames[i])
+        if i == 0:
+            k = 0
+            day = 0
+        elif i == 1:
+            k = 0
+            day = 1
+        elif i == 2:
+            k = 1
+            day = 0
+        elif i == 3:
+            k = 1
+            day = 1
+        elif i == 4:
+            k = 2
+        
+        fname = os.path.join(obs_path, fnames[k])
         df = nc.Dataset(fname)
-
+        
+        start_index = 0
+        end_index = -1
+        
         counts = np.array(df.variables['counts'][:,:,:])
+        time = np.array(df.variables['time'][:])
+        diff = time[1:] - time[:-1]
+        
+        if np.max(diff) > 0.1:
+            N = int(np.where(diff > 0.1)[0][0]) + 1
+            if day == 0:
+                end_index = N
+            elif day == 1:
+                start_index = N
+        
+        counts = counts[start_index:end_index,:,:]
         
         mask1 = np.where(np.sum(counts[:,200:250,:], axis=(1,2)) > 0)[0]
-        metric = (np.sum(counts[mask1,200:250,:], axis=(1,2)) /
-                              np.sum(counts[mask1,625:,:], axis=(1,2)))
-        mask2 = np.where(metric > np.median(metric)/3.)[0]
-        mask = mask1[mask2]
         
+        bg_signal = np.sum(counts[:,625:,:], axis=(1,2))
+        rayleigh_signal = (np.sum(counts[:,200:250,:], axis=(1,2))
+                           - 0.4 * bg_signal)
+        
+        mask = mask1[(rayleigh_signal[mask1]
+                      > 0.5*np.median(rayleigh_signal[mask1]))
+                      & (bg_signal[mask1] < 2*np.median(bg_signal[mask1]))]
+
         counts = counts[mask,:,:]
         wavelengths = np.array(df.variables['wavelength'][:])[::-1] + 0.09
-        shots = np.array(df.variables['shots'][mask])
-    
-        bg = np.mean(counts[:,625:,:], axis=1) / shots
+        shots = np.array(df.variables['shots'][start_index:end_index][mask])
+
+        bg = np.sum(counts[:,625:,:], axis=1)
+        
         nu_Ls = -c_light / lamb0**2 * wavelengths*1e-12
 
         combined_kalium_profiles = []
+        noise_profiles = []
         for j in range(15):
-            profile = np.sum((np.sum(counts[:,425 + 5*j:430 + 5*j,:], axis=1)
-                          / shots  - 5*bg),axis=0)
+            profile = (np.sum(counts[:,425 + 5*j:430 + 5*j,:], axis=(0,1)) 
+                            - np.sum(bg,axis=0)/25) / np.sum(shots, axis=0)
+            noise_profile = (np.sqrt(np.sum(counts[:,425 + 5*j:430 + 5*j,:],
+                                           axis=(0,1))
+                                    + np.sum(bg, axis=0)/625)
+                                    / np.sum(shots, axis=0))
             combined_kalium_profiles.append(profile)
-    
-        norm = get_total_scattering_cross_section(175, 0)
+            noise_profiles.append(noise_profile)
+            
+        norm = get_total_scattering_cross_section(200, 0)
         obs_fit_combined = []
         dens = []
         temps = []
-        winds = []
 
-        for profile in combined_kalium_profiles:
+        for j in range(15):
+            profile = combined_kalium_profiles[j]
+            noise = noise_profiles[j]
             p = np.array([np.max(profile)/norm, 175, 0.1])
             obs_fit_combined.append(opt.leastsq(fit_wind_and_temp, p,
-                                         args=(nu_Ls, profile, Delta_nu_L,
-                                               lineshape), full_output=1)[0]) 
+                                         args=(nu_Ls, profile, noise,
+                                               Delta_nu_L, lineshape),
+                                               full_output=1)[0]) 
             dens.append(obs_fit_combined[-1][0])
             temps.append(obs_fit_combined[-1][1])
-            winds.append(obs_fit_combined[-1][2])
-    
+        
         resids_combined = []
         
         for j in range(len(combined_kalium_profiles)):
@@ -458,15 +505,19 @@ def get_lidar_residuals(lineshape, Delta_nu_L = 20e6):
     
         Res_array.append(np.array(resids_combined) 
                                       / np.array(combined_kalium_profiles))
+        Noise_array.append(np.array(noise_profiles) 
+                                      / np.array(combined_kalium_profiles))
+        
+        
         Temps[i] = np.mean(temps)        
-    
-    return Res_array, Temps
+    return Res_array, Noise_array, Temps
   
-  
-def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
-                        t_L, nt, delta_t, delta_r, Temp, lineshape):
+def get_model_res(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
+                        t_L, nt, delta_t, delta_r, Temp, lineshape,
+                        relative_noise):
     #Simulates a multi-wavelength measurement, performs a three-parameter fit
-    # to the simulated spectrum, and computes the resulting residuals.
+    # to the simulated spectrum based on input noise levels, and computes the
+    # resulting residuals.
   
     sat_spectrum = np.zeros(len(nu_Ls))
 
@@ -478,15 +529,46 @@ def get_model_residuals(nu_Ls, Delta_nu_L, N_L, z, alpha_L, alpha_T, T_atm,
         
     norm = get_total_scattering_cross_section(Temp, 0)
     p = np.array([np.max(sat_spectrum)/norm, Temp, 0.1])
+    noise = relative_noise * sat_spectrum
+    
     model_fit = opt.leastsq(fit_wind_and_temp, p,
-                            args=(nu_Ls, sat_spectrum, Delta_nu_L, lineshape),
-                            full_output=1)[0]
+                            args=(nu_Ls, sat_spectrum, noise, Delta_nu_L,
+                                  lineshape), full_output=1)[0]
 
     model_resid = (sat_spectrum - plot_fit(model_fit, nu_Ls, Delta_nu_L,
                                            lineshape)) / sat_spectrum
     
     return model_resid 
 
+def get_lidar_count_profiles(n=2):
+    #Returns normalized lidar count profiles, filtered by Rayleigh signal and 
+    # background strength, separated into wavelength bins.
 
+    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
+    fnames = os.listdir(obs_path)
 
+    fname = os.path.join(obs_path, fnames[n])
+    df = nc.Dataset(fname)
+              
+    counts = np.array(df.variables['counts'][:,:,:])
+        
+    mask1 = np.where(np.sum(counts[:,200:250,:], axis=(1,2)) > 0)[0]
+    
+    bg_signal = np.sum(counts[:,625:,:], axis=(1,2))
+    rayleigh_signal = (np.sum(counts[:,200:250,:], axis=(1,2))
+                       - 0.4 * bg_signal)
+        
+    mask = mask1[(rayleigh_signal[mask1]
+                      > 0.5*np.median(rayleigh_signal[mask1]))
+                      & (bg_signal[mask1] < 2*np.median(bg_signal[mask1]))]
 
+    counts = counts[mask,:,:]
+    shots = np.array(df.variables['shots'][mask])
+    wavelengths = np.array(df.variables['wavelength'][:])[::-1] + 0.09
+    
+    normalized_counts = np.zeros(counts.shape)
+
+    for i in range(counts.shape[1]):
+        normalized_counts[:,i,:] = counts[:,i,:] / shots
+ 
+    return normalized_counts, shots, wavelengths
