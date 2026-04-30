@@ -19,8 +19,8 @@ outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 #Calculates the spectrum of the degree of saturation.
 
 nu_Ls = (np.arange(59) - 29)*4e8 #Hz
-sats_vdG_nu_Ls = np.zeros(len(nu_Ls))
-sats_Megie_nu_Ls = np.zeros(len(nu_Ls))
+sats_vdG = np.zeros(len(nu_Ls))
+sats_Megie = np.zeros(len(nu_Ls))
 
 E_pulse = 4.7 #mJ
 t_L = 200 #ns
@@ -41,12 +41,12 @@ Doppler_spectrum = he_lib.get_total_scattering_cross_section_spectrum(Temp_He)
 
 for i in range(len(nu_Ls)):
     nu_L = nu_Ls[i]    
-    sats_vdG_nu_Ls[i] = he_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
+    sats_vdG[i] = he_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
                           T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
                           Temp_He, lineshape, ratio_beam=True)    
     g_L = he_lib.get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     sigma_eff = np.sum(g_L * Doppler_spectrum) / np.sum(g_L)
-    sats_Megie_nu_Ls[i] = he_lib.get_saturation_megie(z, alpha_L, t_L,
+    sats_Megie[i] = he_lib.get_saturation_megie(z, alpha_L, t_L,
                           sigma_eff, N_L, T_atm)
 
 #Calculates the saturation-induced density, temperature, and wind biases as a
@@ -82,8 +82,8 @@ for i in range(len(Es)):
 
 fig,ax = plt.subplots(1,2, figsize=(16,8))
 
-ax[0].plot(nu_Ls*1e-9, 100*sats_vdG_nu_Ls, label='von der Gathen approach')
-ax[0].plot(nu_Ls*1e-9, 100*sats_Megie_nu_Ls,
+ax[0].plot(nu_Ls*1e-9, 100*sats_vdG, label='von der Gathen approach')
+ax[0].plot(nu_Ls*1e-9, 100*sats_Megie,
            label=r'Megie approach ($\sigma_{\mathrm{t}}$)')
 
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
@@ -110,8 +110,37 @@ fig.tight_layout()
 
 plt.savefig(os.path.join(outpath, 'He_SI.pdf'), dpi=300)
 
-He_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_nu_Ls, 
-                              100*sats_Megie_nu_Ls))
+fig,ax = plt.subplots(1,2, figsize=(16,8))
+
+ax[0].plot(nu_Ls*1e-9, 100*sats_vdG, label='von der Gathen approach')
+ax[0].plot(nu_Ls*1e-9, 100*sats_Megie,
+           label=r'Megie approach ($\sigma_{\mathrm{t}}$)')
+
+ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
+ax[0].set_ylabel('Saturation percent')
+ax[0].set_xlabel('Laser frequency offset (GHz)')
+ax[0].set_ylim(-1,19)
+ax[0].legend()
+ax[0].grid(True)
+
+ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
+ax[1].plot(u_0s, 100*dens_err, label = 'Density bias')
+ax[1].plot(u_0s, T_err, label = 'Temperature bias')
+ax[1].plot(u_0s, w_err, label = 'Wind bias')
+ax[1].axvline(E_pulse / z**2 / Omega * T_atm, ls='--', c='k')
+
+ax[1].set_xlabel(r'Laser energy density (mJ/m$^2$)')
+ax[1].set_ylabel('Percent density bias \n Absolute temperature bias (K)\n' +
+                 'Absolute wind bias (m/s)')
+ax[1].legend()
+ax[1].grid(True)
+ax[1].yaxis.set_label_position("right")
+ax[1].yaxis.tick_right()
+fig.tight_layout()
+
+plt.savefig(os.path.join(outpath, 'He_SI.png'), dpi=300)
+
+He_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG, 100*sats_Megie))
 np.savetxt(os.path.join(outpath, 'He_saturation_SI.txt'),
            He_spectrum_data.T, delimiter=',')
 
