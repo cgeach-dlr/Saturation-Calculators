@@ -110,36 +110,6 @@ fig.tight_layout()
 
 plt.savefig(os.path.join(outpath, 'He_SI.pdf'), dpi=300)
 
-fig,ax = plt.subplots(1,2, figsize=(16,8))
-
-ax[0].plot(nu_Ls*1e-9, 100*sats_vdG_nu_Ls, label='von der Gathen approach')
-ax[0].plot(nu_Ls*1e-9, 100*sats_Megie_nu_Ls,
-           label=r'Megie approach ($\sigma_{\mathrm{t}}$)')
-
-ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
-ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Laser frequency offset (GHz)')
-ax[0].set_ylim(-1,19)
-ax[0].legend()
-ax[0].grid(True)
-
-ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
-ax[1].plot(u_0s, 100*dens_err, label = 'Density bias')
-ax[1].plot(u_0s, T_err, label = 'Temperature bias')
-ax[1].plot(u_0s, w_err, label = 'Wind bias')
-ax[1].axvline(E_pulse / z**2 / Omega * T_atm, ls='--', c='k')
-
-ax[1].set_xlabel(r'Laser energy density (mJ/m$^2$)')
-ax[1].set_ylabel('Percent density bias \n Absolute temperature bias (K)\n' +
-                 'Absolute wind bias (m/s)')
-ax[1].legend()
-ax[1].grid(True)
-ax[1].yaxis.set_label_position("right")
-ax[1].yaxis.tick_right()
-fig.tight_layout()
-
-plt.savefig(os.path.join(outpath, 'He_SI.png'), dpi=300)
-
 He_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_nu_Ls, 
                               100*sats_Megie_nu_Ls))
 np.savetxt(os.path.join(outpath, 'He_saturation_SI.txt'),
