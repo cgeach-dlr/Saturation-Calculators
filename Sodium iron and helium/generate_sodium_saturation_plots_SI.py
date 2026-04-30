@@ -46,9 +46,9 @@ for i in range(len(nu_Ls)):
     sats_vdG_corr[i] = na_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z,
                   T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r, Temp_Na,
                   lineshape, ratio_beam=True)
-    sats_vdG_uncorr[i] = na_lib.get_saturation_beam_VDG(nu_L, Delta_nu_L, N_L,
-                  z, T_atm, alpha_L, alpha_T, t_L, nt, delta_t, delta_r,
-                  Temp_Na, lineshape, ratio_beam=True)
+    sats_vdG_uncorr[i] = na_lib.get_saturation_beam_uncorrected(nu_L,
+                   Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T, t_L, nt,
+                   delta_t, delta_r, Temp_Na, lineshape, ratio_beam=True)
     g_L = na_lib.get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
     sigma_eff = np.sum(g_L * Doppler_spectrum) / np.sum(g_L)
     sats_Megie[i] = na_lib.get_saturation_megie(z, alpha_L, t_L, sigma_eff, N_L,
