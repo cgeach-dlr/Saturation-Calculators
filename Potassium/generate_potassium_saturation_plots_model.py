@@ -104,17 +104,6 @@ ax[1].set_ylim(-5e-15, 13e-14)
 ax[0].set_ylabel('Instrinsic scattering cross-section (m$^2$)')
 ax[1].set_ylabel('Effective scattering cross-section (m$^2$)')
 
-Data_K_int_spectrum = np.vstack((lambda_shifts*1e12, lines[0], lines[1],
-                                       lines[2], lines[3], lines[4], lines[5],
-                                       lines[6], lines[7]))
-Data_K_int_spectrum_fname = os.path.join(outpath, 'K_intrinsic_spectrum.txt')
-np.savetxt(Data_K_int_spectrum_fname, Data_K_int_spectrum.T, delimiter=',')
-
-Data_K_eff_spectrum = np.vstack((lambda_shifts*1e12, combined_spectrum,
-                                 100*doppler_spectrum))
-Data_K_eff_spectrum_fname = os.path.join(outpath, 'K_effective_spectrum.txt')
-np.savetxt(Data_K_eff_spectrum_fname, Data_K_eff_spectrum.T, delimiter=',')
-
 fig.tight_layout()
 Fig_K_spectrum_fname = os.path.join(outpath, 'K_spectrum.pdf')
 plt.savefig(Fig_K_spectrum_fname, dpi=300)
@@ -210,16 +199,6 @@ fig.tight_layout()
 Fig_K_saturation_fname = os.path.join(outpath, 'K_saturation.pdf')
 plt.savefig(Fig_K_saturation_fname, dpi=300)
 plt.show()
-
-Data_K_sats_nuL = np.vstack((lambda_Ls*1e12, 100*sats_gauss_nuL,
-                             100*sats_lorentz_nuL, 100*sats_Megie_nuL))
-Data_K_sats_nuL_fname = os.path.join(outpath, 'K_saturation_nuL.txt')
-np.savetxt(Data_K_sats_nuL_fname, Data_K_sats_nuL.T, delimiter=',')
-
-Data_K_sats_E = np.vstack((Es, 100*sats_gauss_E, 100*sats_lorentz_E,
-                           100*sats_Megie_E))
-Data_K_sats_E_fname = os.path.join(outpath, 'K_saturation_E.txt')
-np.savetxt(Data_K_sats_E_fname, Data_K_sats_E.T, delimiter=',')
 
 t_L = 275 #ns
 T_atm = 0.7
@@ -393,23 +372,3 @@ ax[1,1].grid(True)
 Fig_K_biases_fname = os.path.join(outpath, 'K_biases.pdf')
 plt.savefig(Fig_K_biases_fname, dpi=300)
 plt.show()
-
-Data_K_T_biases_150 = np.vstack((Es, T_err_150_gauss, T_err_150_gauss_noise,
-                                 T_err_150_lorentz, T_err_150_lorentz_noise))
-Data_K_T_biases_150_fname = os.path.join(outpath, 'K_T_biases_150.txt')
-np.savetxt(Data_K_T_biases_150_fname, Data_K_T_biases_150.T, delimiter=',')
-
-Data_K_T_biases_200 = np.vstack((Es, T_err_200_gauss, T_err_200_gauss_noise,
-                                 T_err_200_lorentz, T_err_200_lorentz_noise))
-Data_K_T_biases_200_fname = os.path.join(outpath, 'K_T_biases_200.txt')
-np.savetxt(Data_K_T_biases_200_fname, Data_K_T_biases_200.T, delimiter=',')
-
-Data_K_w_biases_150 = np.vstack((Es, w_err_150_gauss, w_err_150_gauss_noise,
-                                 w_err_150_lorentz, w_err_150_lorentz_noise))
-Data_K_w_biases_150_fname = os.path.join(outpath, 'K_w_biases_150.txt')
-np.savetxt(Data_K_w_biases_150_fname, Data_K_w_biases_150.T, delimiter=',')
-
-Data_K_w_biases_200 = np.vstack((Es, w_err_200_gauss, w_err_200_gauss_noise,
-                                 w_err_200_lorentz, w_err_200_lorentz_noise))
-Data_K_w_biases_200_fname = os.path.join(outpath, 'K_w_biases_200.txt')
-np.savetxt(Data_K_w_biases_200_fname, Data_K_w_biases_200.T, delimiter=',')
