@@ -109,12 +109,3 @@ ax[1].yaxis.tick_right()
 fig.tight_layout()
 
 plt.savefig(os.path.join(outpath, 'He.pdf'), dpi=300)
-
-
-He_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG, 100*sats_Megie))
-np.savetxt(os.path.join(outpath, 'He_saturation.txt'),
-           He_spectrum_data.T, delimiter=',')
-
-He_temp_and_wind_biases_data = np.vstack((u_0s, 100*dens_err, T_err, w_err))
-np.savetxt(os.path.join(outpath, 'He_temp_and_wind_biases.txt'),
-           He_temp_and_wind_biases_data.T, delimiter=',')
