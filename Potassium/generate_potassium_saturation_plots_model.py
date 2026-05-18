@@ -154,7 +154,6 @@ sats_lorentz_E = np.zeros(len(Es))
 sats_Megie_E = np.zeros(len(Es)) 
 
 for i in range(len(Es)):
-    print(i)
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
     sats_gauss_E[i] = k_lib.get_saturation_beam(0, Delta_nu_L, N_L, z, T_atm,
                                                 alpha_L, alpha_T, t_L, nt,
