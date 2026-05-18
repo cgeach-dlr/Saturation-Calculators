@@ -56,9 +56,13 @@ class HandlerTupleVertical(HandlerTuple):
       
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
-Data_Fig_a = np.loadtxt(os.path.join(outpath, 'Fe_saturation.txt'),
+Data_Fe_saturation_fname = os.path.join(outpath, 'Figure Data',
+                                     'Fe_saturation.txt')
+Data_Fe_saturation = np.loadtxt(Data_Fe_saturation_fname,
                         delimiter=',').T
-Data_Fig_b = np.loadtxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
+Data_Fe_biases_fname = os.path.join(outpath, 'Figure Data',
+                                     'Fe_temp_and_wind_biases.txt')
+Data_Fe_biases_fname = np.loadtxt(Data_Fe_biases_fname,
                         delimiter=',').T
 
 E_pulse = 85 #mJ
