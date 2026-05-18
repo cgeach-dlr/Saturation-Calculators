@@ -124,6 +124,7 @@ plt.show()
 nu_Ls = (np.arange(37) - 18)*1e8 #Hz
 sats_gauss_nuL = np.zeros(len(nu_Ls))
 sats_lorentz_nuL = np.zeros(len(nu_Ls))
+sats_Megie_nuL = np.zeros(len(nu_Ls))
 
 E_pulse = 100 #mJ
 N_L = k_lib.N_L_from_pulse_energy(E_pulse)
@@ -135,11 +136,13 @@ alpha_L = 133e-6 #radians
 alpha_T = 186e-6 #radians
 delta_r = 50e-6 #radians
 Delta_nu_L = 20e6 #Hz
+Doppler_spectrum = k_lib.get_total_scattering_cross_section_spectrum(Temp_K)
 
 nt = 1000
 delta_t = 1.25 #ns
 
 for i in range(len(nu_Ls)):
+    print(i)
     nu_L = nu_Ls[i]    
     sats_gauss_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z, 
                                                   T_atm, alpha_L, alpha_T, t_L,
@@ -149,6 +152,10 @@ for i in range(len(nu_Ls)):
                                                 T_atm, alpha_L, alpha_T, t_L,
                                                 nt, delta_t, delta_r, Temp_K,
                                                 'lorentzian', ratio_beam=True)
+    g_L = k_lib.get_laser_pulseshape(nu_L, Delta_nu_L, 'gauss')
+    sigma_eff = np.sum(g_L * Doppler_spectrum) / np.sum(g_L)
+    sats_Megie_nuL[i] = k_lib.get_saturation_megie(z, alpha_L, t_L, sigma_eff,
+                                                 N_L, T_atm)
 
 #Calculates the degree of saturation as a function of laser pulse energy.      
 Es = 10**np.arange(0, 2.1, 0.2) #mJ
@@ -156,8 +163,10 @@ Es = np.hstack((1e-3, Es))
 
 sats_gauss_E = np.zeros(len(Es))
 sats_lorentz_E = np.zeros(len(Es)) 
+sats_Megie_E = np.zeros(len(Es)) 
 
 for i in range(len(Es)):
+    print(i)
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
     sats_gauss_E[i] = k_lib.get_saturation_beam(0, Delta_nu_L, N_L, z, T_atm,
                                                 alpha_L, alpha_T, t_L, nt,
@@ -167,6 +176,10 @@ for i in range(len(Es)):
                                                 T_atm, alpha_L, alpha_T, t_L,
                                                 nt, delta_t, delta_r, Temp_K,
                                                 'lorentzian', ratio_beam=True)
+    g_L = k_lib.get_laser_pulseshape(0, Delta_nu_L, 'gauss')
+    sigma_eff = np.sum(g_L * Doppler_spectrum) / np.sum(g_L)
+    sats_Megie_E[i] = k_lib.get_saturation_megie(z, alpha_L, t_L, sigma_eff,
+                                                 N_L, T_atm)
 
 lambda_Ls = -nu_Ls / k_lib.nu0 * k_lib.lamb0
     
@@ -175,6 +188,7 @@ fig,ax = plt.subplots(1,2, figsize=(16,8))
 ax[0].plot(lambda_Ls*1e12, 100*sats_gauss_nuL, label='Gaussian profile')
 ax[0].plot(lambda_Ls*1e12, 100*sats_lorentz_nuL,
            label='Lorentzian profile')
+ax[0].plot(lambda_Ls*1e12, 100*sats_Megie_nuL, label='Megie approach')
 
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
@@ -186,6 +200,7 @@ ax[0].grid(True)
 ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
 ax[1].plot(Es, 100*sats_gauss_E, label = 'Gaussian profile')
 ax[1].plot(Es, 100*sats_lorentz_E, label = 'Lorentzian profile')
+ax[1].plot(Es, 100*sats_Megie_E, label = 'Megie approach')
 
 ax[1].set_xlabel('Laser pulse energy (mJ)')
 ax[1].set_ylabel('Saturation percent')
@@ -198,11 +213,12 @@ plt.savefig(Fig_K_saturation_fname, dpi=300)
 plt.show()
 
 Data_K_sats_nuL = np.vstack((lambda_Ls*1e12, 100*sats_gauss_nuL,
-                             100*sats_lorentz_nuL))
+                             100*sats_lorentz_nuL, 100*sats_Megie_nuL))
 Data_K_sats_nuL_fname = os.path.join(outpath, 'K_saturation_nuL.txt')
 np.savetxt(Data_K_sats_nuL_fname, Data_K_sats_nuL.T, delimiter=',')
 
-Data_K_sats_E = np.vstack((Es, 100*sats_gauss_E, 100*sats_lorentz_E))
+Data_K_sats_E = np.vstack((Es, 100*sats_gauss_E, 100*sats_lorentz_E,
+                           100*sats_Megie_E))
 Data_K_sats_E_fname = os.path.join(outpath, 'K_saturation_E.txt')
 np.savetxt(Data_K_sats_E_fname, Data_K_sats_E.T, delimiter=',')
 
@@ -378,7 +394,6 @@ ax[1,1].grid(True)
 Fig_K_biases_fname = os.path.join(outpath, 'K_biases.pdf')
 plt.savefig(Fig_K_biases_fname, dpi=300)
 plt.show()
-
 
 Data_K_T_biases_150 = np.vstack((Es, T_err_150_gauss, T_err_150_gauss_noise,
                                  T_err_150_lorentz, T_err_150_lorentz_noise))
