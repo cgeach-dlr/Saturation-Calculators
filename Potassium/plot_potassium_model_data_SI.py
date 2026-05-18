@@ -53,9 +53,11 @@ class HandlerTupleVertical(HandlerTuple):
 #Designate an output location for figure data and plots
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
-Data_K_sats_nuL_fname = os.path.join(outpath, 'K_saturation_nuL_SI.txt')
+Data_K_sats_nuL_fname = os.path.join(outpath, 'Figure Data', 
+                                     'K_saturation_nuL_SI.txt')
 Data_K_sats_nuL = np.loadtxt(Data_K_sats_nuL_fname, delimiter=',').T
-Data_K_sats_E_fname = os.path.join(outpath, 'K_saturation_E_SI.txt')
+Data_K_sats_E_fname = os.path.join(outpath, 'Figure Data', 
+                                   'K_saturation_E_SI.txt')
 Data_K_sats_E = np.loadtxt(Data_K_sats_E_fname, delimiter=',').T
 
 lambda_Ls = Data_K_sats_nuL[0]
@@ -93,43 +95,18 @@ ax[1].legend()
 ax[1].grid(True)
 fig.tight_layout()
 
-Fig_K_saturation_fname = os.path.join(outpath, 'K_saturation_SI.png')
-plt.savefig(Fig_K_saturation_fname, dpi=300)
-plt.show()
-
-fig,ax = plt.subplots(1,2, figsize=(16,8))
-
-ax[0].plot(lambda_Ls, sats_gauss_nuL, label='Gaussian profile')
-ax[0].plot(lambda_Ls, sats_lorentz_nuL,
-           label='Lorentzian profile')
-ax[0].plot(lambda_Ls, sats_Megie_nuL, label='Megie approach')
-
-ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
-ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Wavelength offset (pm)')
-ax[0].set_ylim(-4,68)
-#ax[0].legend()
-ax[0].grid(True)
-
-ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
-ax[1].plot(Es, sats_gauss_E, label = 'Gaussian profile')
-ax[1].plot(Es, sats_lorentz_E, label = 'Lorentzian profile')
-ax[1].plot(Es, sats_Megie_E, label = 'Megie approach')
-
-ax[1].set_xlabel('Laser pulse energy (mJ)')
-ax[1].set_ylabel('Saturation percent')
-ax[1].legend()
-ax[1].grid(True)
-fig.tight_layout()
-
 Fig_K_saturation_fname = os.path.join(outpath, 'K_saturation_SI.pdf')
 plt.savefig(Fig_K_saturation_fname, dpi=300)
 plt.show()
 
-Data_K_T_biases_150_fname = os.path.join(outpath, 'K_T_biases_150_SI.txt')
-Data_K_w_biases_150_fname = os.path.join(outpath, 'K_w_biases_150_SI.txt')
-Data_K_T_biases_200_fname = os.path.join(outpath, 'K_T_biases_200_SI.txt')
-Data_K_w_biases_200_fname = os.path.join(outpath, 'K_w_biases_200_SI.txt')
+Data_K_T_biases_150_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_T_biases_150_SI.txt')
+Data_K_w_biases_150_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_w_biases_150_SI.txt')
+Data_K_T_biases_200_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_T_biases_200_SI.txt')
+Data_K_w_biases_200_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_w_biases_200_SI.txt')
 
 Data_K_T_biases_150 = np.loadtxt(Data_K_T_biases_150_fname,
                                  delimiter=',').T
@@ -213,23 +190,3 @@ ax[1,1].grid(True)
 Fig_K_biases_fname = os.path.join(outpath, 'K_biases_SI.pdf')
 plt.savefig(Fig_K_biases_fname, dpi=300)
 plt.show()
-
-Data_K_T_biases_150 = np.vstack((Es, T_err_150_gauss, T_err_150_gauss_noise,
-                                 T_err_150_lorentz, T_err_150_lorentz_noise))
-Data_K_T_biases_150_fname = os.path.join(outpath, 'K_T_biases_150_SI.txt')
-np.savetxt(Data_K_T_biases_150_fname, Data_K_T_biases_150.T, delimiter=',')
-
-Data_K_T_biases_200 = np.vstack((Es, T_err_200_gauss, T_err_200_gauss_noise,
-                                 T_err_200_lorentz, T_err_200_lorentz_noise))
-Data_K_T_biases_200_fname = os.path.join(outpath, 'K_T_biases_200_SI.txt')
-np.savetxt(Data_K_T_biases_200_fname, Data_K_T_biases_200.T, delimiter=',')
-
-Data_K_w_biases_150 = np.vstack((Es, w_err_150_gauss, w_err_150_gauss_noise,
-                                 w_err_150_lorentz, w_err_150_lorentz_noise))
-Data_K_w_biases_150_fname = os.path.join(outpath, 'K_w_biases_150_SI.txt')
-np.savetxt(Data_K_w_biases_150_fname, Data_K_w_biases_150.T, delimiter=',')
-
-Data_K_w_biases_200 = np.vstack((Es, w_err_200_gauss, w_err_200_gauss_noise,
-                                 w_err_200_lorentz, w_err_200_lorentz_noise))
-Data_K_w_biases_200_fname = os.path.join(outpath, 'K_w_biases_200_SI.txt')
-np.savetxt(Data_K_w_biases_200_fname, Data_K_w_biases_200.T, delimiter=',')
