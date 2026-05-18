@@ -19,21 +19,23 @@ matplotlib.rc('font', **font)
       
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
-Data_Fig_a = np.loadtxt(os.path.join(outpath, 'Figure Data',
-                                     'He_saturation.txt'),
+Data_He_saturation_fname = os.path.join(outpath, 'Figure Data',
+                                     'He_saturation.txt')
+Data_He_saturation = np.loadtxt(Data_He_saturation_fname,
            delimiter=',').T
-Data_Fig_b = np.loadtxt(os.path.join(outpath, 'Figure Data',
-                                     'He_temp_and_wind_biases.txt'),
+Data_He_biases_fname = os.path.join(outpath, 'Figure Data',
+                                     'He_temp_and_wind_biases.txt')
+Data_He_biases = np.loadtxt(Data_He_biases_fname,
            delimiter=',').T
           
-nu_Ls = Data_Fig_a[0]
-sats_vdG_nu_Ls = Data_Fig_a[1]
-sats_Megie_nu_Ls = Data_Fig_a[2]
+nu_Ls = Data_He_saturation[0]
+sats_vdG_nu_Ls = Data_He_saturation[1]
+sats_Megie_nu_Ls = Data_He_saturation[2]
 
-u_0s = Data_Fig_b[0]
-dens_err = Data_Fig_b[1]
-T_err = Data_Fig_b[2]
-w_err = Data_Fig_b[3]
+u_0s = Data_He_biases[0]
+dens_err = Data_He_biases[1]
+T_err = Data_He_biases[2]
+w_err = Data_He_biases[3]
 
 E_pulse = 4.7 #mJ
 z = 500000 #m
