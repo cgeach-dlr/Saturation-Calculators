@@ -61,7 +61,7 @@ Data_Fe_saturation_fname = os.path.join(outpath, 'Figure Data',
 Data_Fe_saturation = np.loadtxt(Data_Fe_saturation_fname,
                         delimiter=',').T
 Data_Fe_biases_fname = os.path.join(outpath, 'Figure Data',
-                                     'Fe_temp_and_wind_biases.txt')
+                                     'Fe_biases.txt')
 Data_Fe_biases = np.loadtxt(Data_Fe_biases_fname,
                         delimiter=',').T
 
