@@ -121,15 +121,14 @@ lambda_Ls = -nu_Ls / k_lib.nu0 * k_lib.lamb0
     
 fig,ax = plt.subplots(1,2, figsize=(16,8))
 
-ax[0].plot(lambda_Ls*1e12, 100*sats_gauss_nuL, label='Gaussian profile')
-ax[0].plot(lambda_Ls*1e12, 100*sats_lorentz_nuL, label='Lorentzian profile')
-ax[0].plot(lambda_Ls*1e12, 100*sats_Megie_nuL, label='Megie approach')
+ax[0].plot(lambda_Ls*1e12, 100*sats_gauss_nuL)
+ax[0].plot(lambda_Ls*1e12, 100*sats_lorentz_nuL)
+ax[0].plot(lambda_Ls*1e12, 100*sats_Megie_nuL)
 
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
 ax[0].set_xlabel('Wavelength offset (pm)')
-ax[0].set_ylim(-4,87)
-ax[0].legend()
+ax[0].set_ylim(-4,68)
 ax[0].grid(True)
 
 ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
