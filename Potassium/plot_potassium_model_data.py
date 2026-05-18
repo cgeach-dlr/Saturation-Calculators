@@ -53,8 +53,10 @@ class HandlerTupleVertical(HandlerTuple):
 #Designate an output location for figure data and plots
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
-Data_K_int_spectrum_fname = os.path.join(outpath, 'K_intrinsic_spectrum.txt')
-Data_K_eff_spectrum_fname = os.path.join(outpath, 'K_effective_spectrum.txt')
+Data_K_int_spectrum_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_intrinsic_spectrum.txt')
+Data_K_eff_spectrum_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_effective_spectrum.txt')
 
 Data_K_int_spectrum = np.loadtxt(Data_K_int_spectrum_fname,
                                  delimiter=',').T
@@ -106,12 +108,14 @@ ax[1].set_ylabel('Effective scattering cross-section (m$^2$)')
 fig.tight_layout()
 
 Fig_K_spectrum_fname = os.path.join(outpath, 'K_spectrum.pdf')
-#plt.savefig(Fig_K_spectrum_fname, dpi=300)
+plt.savefig(Fig_K_spectrum_fname, dpi=300)
 plt.show()
 
-Data_K_sats_nuL_fname = os.path.join(outpath, 'K_saturation_nuL.txt')
+Data_K_sats_nuL_fname = os.path.join(outpath, 'Figure Data', 
+                                     'K_saturation_nuL.txt')
 Data_K_sats_nuL = np.loadtxt(Data_K_sats_nuL_fname, delimiter=',').T
-Data_K_sats_E_fname = os.path.join(outpath, 'K_saturation_E.txt')
+Data_K_sats_E_fname = os.path.join(outpath, 'Figure Data', 
+                                   'K_saturation_E.txt')
 Data_K_sats_E = np.loadtxt(Data_K_sats_E_fname, delimiter=',').T
 
 lambda_Ls = Data_K_sats_nuL[0]
@@ -152,10 +156,14 @@ Fig_K_saturation_fname = os.path.join(outpath, 'K_saturation.pdf')
 plt.savefig(Fig_K_saturation_fname, dpi=300)
 plt.show()
 
-Data_K_T_biases_150_fname = os.path.join(outpath, 'K_T_biases_150.txt')
-Data_K_w_biases_150_fname = os.path.join(outpath, 'K_w_biases_150.txt')
-Data_K_T_biases_200_fname = os.path.join(outpath, 'K_T_biases_200.txt')
-Data_K_w_biases_200_fname = os.path.join(outpath, 'K_w_biases_200.txt')
+Data_K_T_biases_150_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_T_biases_150.txt')
+Data_K_w_biases_150_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_w_biases_150.txt')
+Data_K_T_biases_200_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_T_biases_200.txt')
+Data_K_w_biases_200_fname = os.path.join(outpath, 'Figure Data', 
+                                         'K_w_biases_200.txt')
 
 Data_K_T_biases_150 = np.loadtxt(Data_K_T_biases_150_fname,
                                  delimiter=',').T
