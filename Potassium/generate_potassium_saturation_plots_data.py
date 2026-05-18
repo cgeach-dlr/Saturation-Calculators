@@ -19,17 +19,23 @@ outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 #Get lidar count profiles
 lidar_data = k_lib.get_lidar_count_profiles()
 
+altitudes = np.arange(750)[120:]/5.
+lidar_profile1 = lidar_data[0][0,:,8][120:]
+lidar_profile2 = lidar_data[0][0,:,0][120:]
+wavelengths = lidar_data[2]
+shots = lidar_data[1][0]
+
 fig, ax = plt.subplots(1,2,figsize=(12,5))
-ax[0].plot(lidar_data[0][0,:,8][120:], np.arange(750)[120:]/5.,
-           label='{0:.2f} pm'.format(lidar_data[2][8]), alpha=0.75)
-ax[0].plot(lidar_data[0][0,:,0][120:], np.arange(750)[120:]/5.,
-           label='{0:.2f} pm'.format(lidar_data[2][0]), alpha=0.75)
+ax[0].plot(lidar_profile1, altitudes,
+           label='{0:.2f} pm'.format(wavelengths[8]), alpha=0.75)
+ax[0].plot(lidar_profile2, altitudes,
+           label='{0:.2f} pm'.format(wavelengths[0]), alpha=0.75)
 ax[0].set_xlabel('Counts / shot')
 ax[0].set_ylabel('Altitude (km)')
 ax[0].set_xscale('log')
 ax[0].legend()
 
-ax[1].bar(lidar_data[2], lidar_data[1][0], 0.1)
+ax[1].bar(wavelengths, shots, 0.1)
 ax[1].set_xlabel('Wavelength (pm)')
 ax[1].set_ylabel('Number of shots')
 
@@ -37,17 +43,6 @@ fig.tight_layout()
 Fig_K_raw_data_fname = os.path.join(outpath, 'K_raw_data.pdf')
 plt.savefig(Fig_K_raw_data_fname, dpi=300, bbox_inches = 'tight')
 plt.show()
-
-Data_K_profile = np.hstack((np.arange(750)[120:]/5., 
-                            lidar_data[0][0,:,8][120:],
-                            lidar_data[0][0,:,0][120:]))
-Data_K_profile_fname = os.path.join(outpath, 'K_profile.txt')
-np.savetxt(Data_K_profile_fname, Data_K_profile, delimiter=',')
-
-Data_K_shots = np.hstack((lidar_data[2], lidar_data[1][0]))
-Data_K_shots_fname = os.path.join(outpath, 'K_shots.txt')
-np.savetxt(Data_K_shots_fname, Data_K_shots, delimiter=',')
-
 
 #Calculate experimental residuals, noise, and temperatures
 R_gauss_data, N_gauss, T_gauss = k_lib.get_lidar_res('gauss')
@@ -101,11 +96,6 @@ Fig_K_measurements_fname = os.path.join(outpath, 'K_measurements.pdf')
 plt.savefig(Fig_K_measurements_fname, dpi=300)
 plt.show()
 
-Data_K_measurements = np.hstack((lambda_Ls[:, np.newaxis] * 1e12,
-                                 100*R_lorentz_data[2].T))
-Data_K_measurements_fname = os.path.join(outpath, 'K_measurements.txt')
-np.savetxt(Data_K_measurements_fname, Data_K_measurements, delimiter=',')
-
 figure_parts = np.array([['a','b'],
                          ['c','d'],
                          ['e','f']])
@@ -137,19 +127,7 @@ for i in range(3):
                      label='Model residuals')
         ax[i,j].set_ylim(-12,15.5)
         ax[i,j].axhline(0)
-        
-        
-        Data_K_comp = np.vstack((lambda_Ls * 1e12, 
-                                 100*np.mean(data_res, axis=0),
-                                 100*(np.mean(data_res, axis=0)
-                                 + np.std(data_res, axis=0)),
-                                 100*(np.mean(data_res, axis=0)
-                                 - np.std(data_res, axis=0))))
-        Data_K_comp_fname = os.path.join(outpath, 'K_comparison_'
-                                       + figure_parts[i,j] + '.txt')
-        np.savetxt(Data_K_comp_fname, Data_K_comp.T, delimiter=',')
-        
-        
+
         if i == 2:        
             ax[i,j].set_xlabel('Wavelength offset (pm)')
         else:
@@ -162,7 +140,6 @@ fig.tight_layout()
 Fig_K_comp_fname = os.path.join(outpath, 'K_comparison.pdf')
 plt.savefig(Fig_K_comp_fname, dpi=300)
 plt.show()
-
 
 ns = np.array([0,1])
 fig, ax = plt.subplots(2,2, figsize=(16,13))
@@ -190,19 +167,7 @@ for i in range(2):
         ax[i,j].plot(lambda_Ls * 1e12, 100*model_res, 'r',
                      label='Model residuals')
         ax[i,j].set_ylim(-12,15.5)
-        ax[i,j].axhline(0)
-        
-        
-        Data_K_comp2 = np.vstack((lambda_Ls * 1e12, 
-                                  100*np.mean(data_res, axis=0),
-                                  100*(np.mean(data_res, axis=0)
-                                  + np.std(data_res, axis=0)),
-                                  100*(np.mean(data_res, axis=0)
-                                  - np.std(data_res, axis=0))))
-        Data_K_comp2_fname = os.path.join(outpath, 'K_comparison2_' + 
-                                               figure_parts[i,j] + '.txt')
-        np.savetxt(Data_K_comp2_fname, Data_K_comp2.T, delimiter=',')
-        
+        ax[i,j].axhline(0)      
         
         if i == 1: 
             ax[i,j].set_xlabel('Wavelength offset (pm)')
