@@ -62,7 +62,7 @@ Data_Fe_saturation = np.loadtxt(Data_Fe_saturation_fname,
                         delimiter=',').T
 Data_Fe_biases_fname = os.path.join(outpath, 'Figure Data',
                                      'Fe_temp_and_wind_biases.txt')
-Data_Fe_biases_fname = np.loadtxt(Data_Fe_biases_fname,
+Data_Fe_biases = np.loadtxt(Data_Fe_biases_fname,
                         delimiter=',').T
 
 E_pulse = 85 #mJ
@@ -71,16 +71,16 @@ alpha_L = 130e-6 #rad
 Omega = np.pi / 4 * np.sin(alpha_L)**2
 T_atm = 0.5
                         
-nu_Ls = Data_Fig_a[0]
-sats_vdG_gauss = Data_Fig_a[1]
-sats_vdG_lorentz = Data_Fig_a[2]
-sats_Megie = Data_Fig_a[3]
+nu_Ls = Data_Fe_saturation[0]
+sats_vdG_gauss = Data_Fe_saturation[1]
+sats_vdG_lorentz = Data_Fe_saturation[2]
+sats_Megie = Data_Fe_saturation[3]
 
-u_0s = Data_Fig_b[0]
-dens_err_200_gauss = Data_Fig_b[1]
-dens_err_200_lorentz = Data_Fig_b[2]
-T_err_200_gauss = Data_Fig_b[3]
-T_err_200_lorentz = Data_Fig_b[4]
+u_0s = Data_Fe_biases[0]
+dens_err_200_gauss = Data_Fe_biases[1]
+dens_err_200_lorentz = Data_Fe_biases[2]
+T_err_200_gauss = Data_Fe_biases[3]
+T_err_200_lorentz = Data_Fe_biases[4]
 
 fig,ax = plt.subplots(1,2, figsize=(16,8))
 
