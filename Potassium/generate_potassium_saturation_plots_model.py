@@ -142,7 +142,6 @@ nt = 1000
 delta_t = 1.25 #ns
 
 for i in range(len(nu_Ls)):
-    print(i)
     nu_L = nu_Ls[i]    
     sats_gauss_nuL[i] = k_lib.get_saturation_beam(nu_L, Delta_nu_L, N_L, z, 
                                                   T_atm, alpha_L, alpha_T, t_L,
