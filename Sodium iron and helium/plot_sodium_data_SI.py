@@ -114,4 +114,4 @@ ax[1].legend(loc='upper left', framealpha=1)
 
 fig.tight_layout()
 
-plt.savefig(os.path.join(outpath, 'Na_SI.png'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Na_SI.pdf'), dpi=300)
