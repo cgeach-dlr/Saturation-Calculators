@@ -24,7 +24,7 @@ Data_He_saturation_fname = os.path.join(outpath, 'Figure Data',
 Data_He_saturation = np.loadtxt(Data_He_saturation_fname,
            delimiter=',').T
 Data_He_biases_fname = os.path.join(outpath, 'Figure Data',
-                                     'He_temp_and_wind_biases_SI.txt')
+                                     'He_biases_SI.txt')
 Data_He_biases = np.loadtxt(Data_He_biases_fname,
            delimiter=',').T
           
