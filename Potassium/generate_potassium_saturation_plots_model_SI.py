@@ -79,7 +79,6 @@ nt = 1000
 delta_t = 1.25 #ns
 
 for i in range(len(nu_Ls)):
-    print(i)
     nu_L = nu_Ls[i]    
     sats_gauss_nuL[i] = k_lib.get_saturation_beam_uncorrected(nu_L, Delta_nu_L,
                                          N_L, z, T_atm, alpha_L, alpha_T, t_L,
@@ -103,7 +102,6 @@ sats_lorentz_E = np.zeros(len(Es))
 sats_Megie_E = np.zeros(len(Es)) 
 
 for i in range(len(Es)):
-    print(i)
     N_L = k_lib.N_L_from_pulse_energy(Es[i])
     sats_gauss_E[i] = k_lib.get_saturation_beam_uncorrected(0, Delta_nu_L, N_L,
                                          z, T_atm, alpha_L, alpha_T, t_L, nt,
