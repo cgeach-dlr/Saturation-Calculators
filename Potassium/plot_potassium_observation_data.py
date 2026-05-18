@@ -55,7 +55,7 @@ Data_K_measurements = np.loadtxt(Data_K_measurements_fname, delimiter=',').T
 
 fig = plt.figure(figsize=(12,7))
 for i in range(15):
-    plt.plot(Data_K_measurements[0], Data_K_measurements[1][i])
+    plt.plot(Data_K_measurements[0], Data_K_measurements[1:][i])
     
 plt.xlabel('Wavelength offset (pm)')
 plt.ylabel('Relative residuals (%)') 
