@@ -87,7 +87,7 @@ for i in range(5):
 dates = ['25-26 January 2010', '26 January 2010 (evening)',
          '27-28 January 2011', '28-29 January 2011', '24-25 February 2011']
 
-lineshape_names = ['Gauss', 'Lorentzian']
+lineshape_names = ['Gaussian', 'Lorentzian']
 
 fig = plt.figure(figsize=(12,7))
 for i in range(15):
