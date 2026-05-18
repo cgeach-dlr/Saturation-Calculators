@@ -19,9 +19,11 @@ matplotlib.rc('font', **font)
       
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
-Data_Fig_a = np.loadtxt(os.path.join(outpath, 'He_saturation.txt'),
+Data_Fig_a = np.loadtxt(os.path.join(outpath, 'Figure Data',
+                                     'He_saturation.txt'),
            delimiter=',').T
-Data_Fig_b = np.loadtxt(os.path.join(outpath, 'He_temp_and_wind_biases.txt'),
+Data_Fig_b = np.loadtxt(os.path.join(outpath, 'Figure Data',
+                                     'He_temp_and_wind_biases.txt'),
            delimiter=',').T
           
 nu_Ls = Data_Fig_a[0]
