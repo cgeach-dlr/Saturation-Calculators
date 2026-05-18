@@ -108,18 +108,6 @@ ax[1].grid(True)
 
 plt.savefig(os.path.join(outpath, 'Simple.pdf'), dpi=300)
 
-Delta_nu_L_data = np.vstack((Delta_nu_Ls*1e-6, 100*sats_vdG_Delta_nu_Ls, 
-                    100*sats_Megie_Delta_nu_Ls, 100*sats_Megie_Delta_nu_Ls2))
-np.savetxt(os.path.join(outpath, 'Simple_Delta_nu_L_data.txt'),
-           Delta_nu_L_data.T, delimiter=',')
-
-nu_L_data = np.vstack((nu_Ls*1e-6, 100*sats_vdG_nu_Ls, 100*sats_Megie_nu_Ls,
-                       100*sats_Megie_nu_Ls2))
-np.savetxt(os.path.join(outpath, 'Simple_nu_L_data.txt'), nu_L_data.T,
-           delimiter=',')
-
-
-
 
 
 
