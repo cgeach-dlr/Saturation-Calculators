@@ -150,50 +150,6 @@ Fig_K_saturation_fname = os.path.join(outpath, 'K_saturation_SI.pdf')
 plt.savefig(Fig_K_saturation_fname, dpi=300)
 plt.show()
 
-fig,ax = plt.subplots(1,2, figsize=(16,8))
-
-ax[0].plot(lambda_Ls*1e12, 100*sats_gauss_nuL, label='Gaussian profile')
-ax[0].plot(lambda_Ls*1e12, 100*sats_lorentz_nuL, label='Lorentzian profile')
-ax[0].plot(lambda_Ls*1e12, 100*sats_Megie_nuL, label='Megie approach')
-
-ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
-ax[0].set_ylabel('Saturation percent')
-ax[0].set_xlabel('Wavelength offset (pm)')
-ax[0].set_ylim(-4,87)
-ax[0].legend()
-ax[0].grid(True)
-
-ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
-ax[1].plot(Es, 100*sats_gauss_E, label = 'Gaussian profile')
-ax[1].plot(Es, 100*sats_lorentz_E, label = 'Lorentzian profile')
-ax[1].plot(Es, 100*sats_Megie_E, label = 'Megie approach')
-
-ax[1].set_xlabel('Laser pulse energy (mJ)')
-ax[1].set_ylabel('Saturation percent')
-ax[1].legend()
-ax[1].grid(True)
-fig.tight_layout()
-
-Fig_K_saturation_fname = os.path.join(outpath, 'K_saturation_SI.png')
-plt.savefig(Fig_K_saturation_fname, dpi=300)
-plt.show()
-
-Data_K_sats_nuL = np.vstack((lambda_Ls*1e12, 100*sats_gauss_nuL,
-                             100*sats_lorentz_nuL, 100*sats_Megie_nuL))
-Data_K_sats_nuL_fname = os.path.join(outpath, 'K_saturation_nuL_SI.txt')
-np.savetxt(Data_K_sats_nuL_fname, Data_K_sats_nuL.T, delimiter=',')
-
-Data_K_sats_E = np.vstack((Es, 100*sats_gauss_E, 100*sats_lorentz_E,
-                           100*sats_Megie_E))
-Data_K_sats_E_fname = os.path.join(outpath, 'K_saturation_E_SI.txt')
-np.savetxt(Data_K_sats_E_fname, Data_K_sats_E.T, delimiter=',')
-
-t_L = 275 #ns
-T_atm = 0.7
-z = 92500 #km
-
-Delta_nu_L = 20e6 #Hz
-
 #Calculates the saturation-induced temperature and wind errors as a function of
 # laser pulse energy.      
 Es = 10**np.arange(0, 2.1, 0.2) #mJ
@@ -216,6 +172,12 @@ T_err_150_lorentz_noise = np.zeros(len(Es)) #K
 w_err_150_lorentz_noise = np.zeros(len(Es)) #m/s
 T_err_150_gauss_noise = np.zeros(len(Es)) #K
 w_err_150_gauss_noise = np.zeros(len(Es)) #m/s
+
+t_L = 275 #ns
+T_atm = 0.7
+z = 92500 #km
+
+Delta_nu_L = 20e6 #Hz
 
 alpha_L = 270e-6 #radians
 alpha_T = 186e-6 #radians
@@ -345,75 +307,3 @@ ax[1,1].grid(True)
 Fig_K_biases_fname = os.path.join(outpath, 'K_biases_SI.pdf')
 plt.savefig(Fig_K_biases_fname, dpi=300)
 plt.show()
-
-fig,ax = plt.subplots(2,2, figsize=(16,16))
-
-ax[0,0].text(.06,.9, '(a)', transform=plt.gcf().transFigure)
-ax[0,0].text(.53,.9, '(b)', transform=plt.gcf().transFigure)
-ax[0,0].text(.06,.49, '(c)', transform=plt.gcf().transFigure)
-ax[0,0].text(.53,.49, '(d)', transform=plt.gcf().transFigure)
-
-a0, = ax[0,0].plot(Es, T_err_150_gauss)
-a1, = ax[0,0].plot(Es, T_err_150_gauss_noise, c='tab:blue', linestyle='--')
-a2, = ax[0,0].plot(Es, T_err_150_lorentz)
-a3, = ax[0,0].plot(Es, T_err_150_lorentz_noise, c='tab:orange', linestyle='--')
-ax[0,0].set_ylim(-1,9)
-ax[0,0].set_yticks([0,2,4,6,8])
-ax[0,0].grid(True)
-ax[0,0].set_ylabel('Temperature bias (K)')
-ax[0,0].legend([(a0, a1), (a2,a3)],
-             ['Gaussian profile',
-              'Lorentzian profile'],
-           handler_map = {tuple : HandlerTupleVertical()}, fontsize=16)
-
-ax[1,0].plot(Es, w_err_150_gauss)
-ax[1,0].plot(Es, w_err_150_gauss_noise, c='tab:blue', linestyle='--')
-ax[1,0].plot(Es, w_err_150_lorentz)
-ax[1,0].plot(Es, w_err_150_lorentz_noise, c='tab:orange', linestyle='--')
-ax[1,0].set_ylim(-3,.5)
-ax[1,0].set_xlabel('Laser pulse energy (mJ)')
-ax[1,0].set_ylabel('Line-of-sight wind bias (m/s)')
-ax[1,0].grid(True)
-
-ax[0,1].plot(Es, T_err_200_gauss, label = 'Gaussian profile')
-ax[0,1].plot(Es, T_err_200_gauss_noise, c='tab:blue', linestyle='--',
-             label = 'Gaussian profile')
-ax[0,1].plot(Es, T_err_200_lorentz, label = 'Lorentzian profile')
-ax[0,1].plot(Es, T_err_200_lorentz_noise, c='tab:orange', linestyle='--',
-             label = 'Lorentzian profile')
-
-ax[0,1].set_ylim(-1,9)
-ax[0,1].set_yticks([0,2,4,6,8])
-ax[0,1].grid(True)
-
-ax[1,1].plot(Es, w_err_200_gauss)
-ax[1,1].plot(Es, w_err_200_gauss_noise, c='tab:blue', linestyle='--')
-ax[1,1].plot(Es, w_err_200_lorentz)
-ax[1,1].plot(Es, w_err_200_lorentz_noise, c='tab:orange', linestyle='--')
-ax[1,1].set_ylim(-3,.5)
-ax[1,1].set_xlabel('Laser pulse energy (mJ)')
-ax[1,1].grid(True)
-
-Fig_K_biases_fname = os.path.join(outpath, 'K_biases_SI.png')
-plt.savefig(Fig_K_biases_fname, dpi=300)
-plt.show()
-
-Data_K_T_biases_150 = np.vstack((Es, T_err_150_gauss, T_err_150_gauss_noise,
-                                 T_err_150_lorentz, T_err_150_lorentz_noise))
-Data_K_T_biases_150_fname = os.path.join(outpath, 'K_T_biases_150_SI.txt')
-np.savetxt(Data_K_T_biases_150_fname, Data_K_T_biases_150.T, delimiter=',')
-
-Data_K_T_biases_200 = np.vstack((Es, T_err_200_gauss, T_err_200_gauss_noise,
-                                 T_err_200_lorentz, T_err_200_lorentz_noise))
-Data_K_T_biases_200_fname = os.path.join(outpath, 'K_T_biases_200_SI.txt')
-np.savetxt(Data_K_T_biases_200_fname, Data_K_T_biases_200.T, delimiter=',')
-
-Data_K_w_biases_150 = np.vstack((Es, w_err_150_gauss, w_err_150_gauss_noise,
-                                 w_err_150_lorentz, w_err_150_lorentz_noise))
-Data_K_w_biases_150_fname = os.path.join(outpath, 'K_w_biases_150_SI.txt')
-np.savetxt(Data_K_w_biases_150_fname, Data_K_w_biases_150.T, delimiter=',')
-
-Data_K_w_biases_200 = np.vstack((Es, w_err_200_gauss, w_err_200_gauss_noise,
-                                 w_err_200_lorentz, w_err_200_lorentz_noise))
-Data_K_w_biases_200_fname = os.path.join(outpath, 'K_w_biases_200_SI.txt')
-np.savetxt(Data_K_w_biases_200_fname, Data_K_w_biases_200.T, delimiter=',')
