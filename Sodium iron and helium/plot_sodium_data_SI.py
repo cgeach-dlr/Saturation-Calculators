@@ -21,11 +21,11 @@ outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
 Data_Na_saturation_fname = os.path.join(outpath, 'Figure Data',
                                      'Na_saturation_SI.txt')
-Data_Na_saturation = np.loadtxt(Data_He_saturation_fname,
+Data_Na_saturation = np.loadtxt(Data_Na_saturation_fname,
            delimiter=',').T
 Data_Na_biases_fname = os.path.join(outpath, 'Figure Data',
                                      'Na_biases_SI.txt')
-Data_Na_biases = np.loadtxt(Data_He_biases_fname,
+Data_Na_biases = np.loadtxt(Data_Na_biases_fname,
            delimiter=',').T
           
 nu_Ls = Data_Na_saturation[0]
