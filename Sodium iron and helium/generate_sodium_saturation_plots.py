@@ -118,13 +118,3 @@ ax[1].legend(loc='upper left', framealpha=1)
 fig.tight_layout()
 
 plt.savefig(os.path.join(outpath, 'Na.pdf'), dpi=300)
-
-
-Na_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_corr,
-                              100*sats_vdG_uncorr, 100*sats_Megie))
-np.savetxt(os.path.join(outpath, 'Na_saturation.txt'), Na_spectrum_data.T,
-           delimiter=',')
-
-Na_temp_and_wind_biases_data = np.vstack((u_0s, dens_err, T_err, w_err))
-np.savetxt(os.path.join(outpath, 'Na_temp_and_wind_biases.txt'),
-           Na_temp_and_wind_biases_data.T, delimiter=',')
