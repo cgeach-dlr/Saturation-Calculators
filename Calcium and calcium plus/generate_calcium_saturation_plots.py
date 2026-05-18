@@ -75,13 +75,6 @@ for i in range(len(lambda_Ls)):
                 ca_plus_Delta_nu_L/10, ca_plus_N_L, z, T_atm, alpha_L2, alpha_T,
                 10*ca_plus_t_L, nt, 10*delta_t, delta_r, Temp_Ca, lineshape)
 
-Spectrum_data = np.vstack((lambda_Ls*1e12, 100*ca_sats1, 100*ca_sats2,
-                           100*ca_sats3, 100*ca_plus_sats1, 100*ca_plus_sats2,
-                           100*ca_plus_sats3))
-
-np.savetxt(os.path.join(outpath, 'Ca_and_ca_plus_spectrum.txt'),
-           Spectrum_data.T, delimiter=',')
-
 # Generate plot for Figure 1
 plt.figure(figsize=(12,8))
 
@@ -93,7 +86,7 @@ plt.xlabel('Laser wavelength offset (pm)')
 
 plt.grid(True)
 
-plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus1.jpg'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus1.pdf'), dpi=300)
 
 # Generate plot for Figure 3
 plt.figure(figsize=(12,8))
@@ -110,7 +103,7 @@ plt.xlabel('Laser wavelength offset (pm)')
 
 plt.grid(True)
 
-plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus3.jpg'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus3.pdf'), dpi=300)
 
 # Calculates the saturation-induces temperature biases for Figures 2 and 4
 Es = 10**np.arange(0, 2.1, 0.2) #mJ
@@ -178,11 +171,6 @@ for i in range(len(Es)):
     ca_plus_T_err2[i] = ca_plus_Res2[0][0][1] - ca_plus_Res2[1][0][1]
     ca_plus_T_err3[i] = ca_plus_Res3[0][0][1] - ca_plus_Res3[1][0][1]
     
-Temp_bias_data = np.vstack((Es, ca_T_err1, ca_T_err2, ca_T_err3,
-                            ca_plus_T_err1, ca_plus_T_err2, ca_plus_T_err3))
-np.savetxt(os.path.join(outpath, 'Ca_and_ca_plus_temp_biases.txt'),
-           Temp_bias_data.T, delimiter=',')
-
 # Generate plot for Figure 2       
 plt.figure(figsize=(12,8))
 
@@ -194,7 +182,7 @@ plt.xlabel('Pulse energy (mJ)')
 
 plt.grid(True)
 
-plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus2.jpg'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus2.pdf'), dpi=300)
 
 # Generate plot for Figure 4
 plt.figure(figsize=(12,8))
@@ -209,4 +197,4 @@ plt.xlabel('Pulse energy (mJ)')
 
 plt.grid(True)
 
-plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus4.jpg'), dpi=300)
+plt.savefig(os.path.join(outpath, 'Ca_and_ca_plus4.pdf'), dpi=300)
