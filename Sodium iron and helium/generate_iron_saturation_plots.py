@@ -173,14 +173,3 @@ ax[1].yaxis.tick_right()
 fig.tight_layout()
 
 plt.savefig(os.path.join(outpath, 'Fe.pdf'), dpi=300)
-
-Fe_spectrum_data = np.vstack((nu_Ls*1e-9, 100*sats_vdG_gauss,
-                              100*sats_vdG_lorentz, 100*sats_Megie))
-np.savetxt(os.path.join(outpath, 'Fe_saturation.txt'),
-           Fe_spectrum_data.T, delimiter=',')
-
-Fe_temp_and_wind_biases_data = np.vstack((u_0s, dens_err_gauss,
-                                          dens_err_lorentz, T_err_gauss,
-                                          T_err_lorentz))
-np.savetxt(os.path.join(outpath, 'Fe_temp_and_wind_biases.txt'),
-           Fe_temp_and_wind_biases_data.T, delimiter=',')
