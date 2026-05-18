@@ -628,7 +628,7 @@ def get_lidar_res(lineshape, Delta_nu_L = 20e6):
     # noise, and the residuals of that fit are returned, along with the average
     # temperature over the potassium layer.
     
-    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data 2')
+    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
     fnames = os.listdir(obs_path)
   
     Res_array = []
@@ -764,7 +764,7 @@ def get_lidar_count_profiles(n=2):
     #Returns normalized lidar count profiles, filtered by Rayleigh signal and 
     # background strength, separated into wavelength bins.
 
-    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data 2')
+    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
     fnames = os.listdir(obs_path)
 
     fname = os.path.join(obs_path, fnames[n])
