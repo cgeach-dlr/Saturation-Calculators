@@ -85,6 +85,24 @@ def get_natural_absorption_line(iso, j, k):
                               nu_jk[iso,j,k])**2 + (Delta_nu_n/2)**2))
     return natural_absorption_line
 
+def get_natural_absorption_line_uncorrected(iso, j, k):
+   #Returns the scattering cross-section spectrum of the transition between
+   # ground-state j and excited state k for isotope 39K (i=0) and 41K (i=1)
+   # (natural linewidth only) 
+ 
+    #Need to make sure sufficient resolution is used to resolve absorption
+    # line
+    
+    if delta_nu > Delta_nu_n / 5.:
+        print('Error: insufficient spectral resolution to resolve' +
+              ' absorption line.')
+        return
+        
+    natural_absorption_line = (g_jk[j,k] / np.sum(g_jk) * absorb_coeff
+                               * f_D / np.pi * Delta_nu_n / 2 / ((nu_shifts -
+                              nu_jk[iso,j,k])**2 + (Delta_nu_n/2)**2))
+    return natural_absorption_line
+
 def get_combined_absorption_line():
     #Returns the combined absorption line for the complete D_1 line,
     # accounting for the differing relative abundances of the j=1 and j=2
@@ -163,6 +181,33 @@ def get_effective_absorption_lines(nu_L=0, Delta_nu_L = 100*10**6,
 
     return L_jk
 
+def get_effective_absorption_lines_uncorrected(nu_L=0,
+                                   Delta_nu_L = 100*10**6,
+                                   lineshape='gauss'):
+    #Returns the effective absorption spectrum, accounting for laser lineshape
+
+    #Check that sufficient spectral resolution is used to resolve the
+    # laser line
+                                       
+    if delta_nu > Delta_nu_L / 5.:
+        print('Error: insufficient spectral resolution to resolve the' + 
+              ' laser line.')
+        return 
+      
+    L_jk = np.zeros((2, 2, 2, nv))
+    laser_spectrum = get_laser_pulseshape(nu_L, Delta_nu_L, lineshape)
+    
+    for iso in range(2):
+        for j in range(2):
+            for k in range(2):
+                alpha_jk = (absorb_coeff * g_jk[j,k] / np.sum(g_jk)
+                            * f_D / np.pi * Delta_nu_n / 2 
+                            / ((nu_jk[iso,j,k] + nu_shifts)**2 
+                            + (Delta_nu_n/2)**2))
+                L_jk[iso,j,k,:] = convolve(laser_spectrum, alpha_jk)
+
+    return L_jk
+  
 def get_total_scattering_cross_section_spectrum(Temp_K, Delta_nu_L=100e6,
                                                 lineshape='gauss'):
     #Returns the total effective Doppler-broadened scattering cross-section
@@ -327,6 +372,112 @@ def get_saturation(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10, nt=50,
     else:
         return P_s, P_ns
 
+def get_saturation_uncorrected(nu_L, Delta_nu_L, N_L, z, alpha_L, T_atm, t_L=10,
+                  nt=50, delta_t=1, Temp_K=200, lineshape='gauss', ratio=False):
+    #Returns the expected degree of saturation, according to the VDG approach    
+    
+    N = N_t_laser(nt, delta_t, t_L, N_L) 
+    Omega = np.pi / 4 * alpha_L**2    
+    temp_spectrum = get_temperature_spectrum(Temp_K)
+
+    
+    #Find the index for which 99.99% of photons have been accounted for, in
+    # order to abridge the calculation (the DES can be solved analytically
+    # for time steps where the number of photons is approximately zero)
+    
+    try:
+        nt = np.where(np.cumsum(N) > 0.9999 * N_L)[0][0] + 2
+    except IndexError:
+        print('No abridgement possible. Warning:' +  
+              'only {0:.2f} percent of photons accounted for.'.format(
+                       np.sum(N)/N_L * 100))    
+   
+    n = np.zeros((2, 2, nv, nt))
+    n_e = np.zeros((2, 2, nv, nt))
+    
+    n[:,0,:,0] = np.ones(nv) / 2.
+    n[:,1,:,0] = np.ones(nv) / 2.
+
+    n_e2 = np.zeros((2, 2, nv, nt))
+
+    P_s = 0
+    P_ns = 0   
+    
+    L_jk = get_effective_absorption_lines_uncorrected(nu_L, Delta_nu_L,
+                                                      lineshape)
+    
+    for i in range(nt - 1):
+        number_of_photons = T_atm * N[i] / z**2 / Omega
+        f_jk = L_jk * number_of_photons     
+        
+        if np.max(f_jk) > 0.25:
+            print('Error: delta_t must be reduced.' + 
+                  ' max f_jk = {0:.3f} '.format(np.max(f_jk)))
+            return
+        n[:,0,:,i+1] = n[:,0,:,i] + ((1 / 6 * n_e[:,0,:,i]
+                                      + 1 / 2 * n_e[:,1,:,i] )
+                                      / tau_R  * delta_t
+                                      - (n[:,0,:,i] - n_e[:,0,:,i])
+                                      * f_jk[:,0,0,:] 
+                                      - (n[:,0,:,i] - 3 / 5 * n_e[:,1,:,i])
+                                      * f_jk[:,0,1,:])
+        n[:,1,:,i+1] = n[:,1,:,i] + ((5 / 6 * n_e[:,0,:,i]
+                                      + 1 / 2 * n_e[:,1,:,i])
+                                      / tau_R  * delta_t
+                                      - (n[:,1,:,i] - 5 / 3 * n_e[:,0,:,i])
+                                      * f_jk[:,1,0,:] 
+                                      - (n[:,1,:,i] -  n_e[:,1,:,i])
+                                      * f_jk[:,1,1,:]) 
+        n_e[:,0,:,i+1] = n_e[:,0,:,i] + (-n_e[:,0,:,i] / tau_R * delta_t
+                                         + (n[:,0,:,i] - n_e[:,0,:,i])
+                                         * f_jk[:,0,0,:]
+                                         + (n[:,1,:,i] - 5 / 3 * n_e[:,0,:,i])
+                                         * f_jk[:,1,0,:])
+        n_e[:,1,:,i+1] = n_e[:,1,:,i] + (-n_e[:,1,:,i] / tau_R * delta_t
+                                         + (n[:,0,:,i] - 3 / 5 * n_e[:,1,:,i])
+                                         * f_jk[:,0,1,:]
+                                         + (n[:,1,:,i] -  n_e[:,1,:,i])
+                                         * f_jk[:,1,1,:])
+
+        n_e2[:,0,:,i+1] = n_e2[:,0,:,i] + (-n_e2[:,0,:,i] / tau_R * delta_t
+                                    + 0.5 * f_jk[:,0,0,:]
+                                    + 0.5 * f_jk[:,1,0,:]) 
+        n_e2[:,1,:,i+1] = n_e2[:,1,:,i] + (-n_e2[:,1,:,i] / tau_R * delta_t
+                                    + 0.5 * f_jk[:,0,1,:]
+                                    + 0.5 * f_jk[:,1,1,:])
+        for iso in range(2):
+            for j in range(2):
+                P_s += f_isos[iso] * (np.sum(n_e[iso,j,:,i] *
+                             (g_jk[0,j]/np.sum(g_jk[:,j]) * q_jk[0,j]
+                             + g_jk[1,j]/np.sum(g_jk[:,j]) * q_jk[1,j])
+                             * temp_spectrum)
+                             / tau_R * delta_t / np.sum(temp_spectrum))
+                P_ns += f_isos[iso] * (np.sum(n_e2[iso,j,:,i] *
+                              (g_jk[0,j]/np.sum(g_jk[:,j]) * q_jk[0,j]
+                              + g_jk[1,j]/np.sum(g_jk[:,j]) * q_jk[1,j])
+                              * temp_spectrum)
+                              / tau_R * delta_t / np.sum(temp_spectrum))
+            
+    for iso in range(2):
+        for j in range(2):
+            P_s += f_isos[iso] * np.sum(n_e[iso,j,:,i+1] *
+                         (g_jk[0,j]/np.sum(g_jk[:,j]) * q_jk[0,j]
+                         + g_jk[1,j]/np.sum(g_jk[:,j]) * q_jk[1,j])
+                         * temp_spectrum) / np.sum(temp_spectrum)
+            P_ns += f_isos[iso] * np.sum(n_e2[iso,j,:,i+1] *
+                          (g_jk[0,j]/np.sum(g_jk[:,j]) * q_jk[0,j]
+                          + g_jk[1,j]/np.sum(g_jk[:,j]) * q_jk[1,j])
+                          * temp_spectrum) / np.sum(temp_spectrum)     
+            
+    #If ratio == True, the degree of saturation is returned. If 
+    # ratio != True, the total number of emitted photons in the case with 
+    # saturation and without saturation are returned individually
+    
+    if ratio:
+        return 1 - P_s / P_ns
+    else:
+        return P_s, P_ns
+
 def gauss_1D(alpha_L, r):
     #Returns a 1D Gaussian profile
     return np.exp(-4*r**2/alpha_L**2)
@@ -367,6 +518,42 @@ def get_saturation_beam(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L, alpha_T,
     else:
         return np.sum(sats[0,:] * r)/Omega, np.sum(sats[1,:] * r)/Omega
     
+def get_saturation_beam_uncorrected(nu_L, Delta_nu_L, N_L, z, T_atm, alpha_L,
+                       alpha_T, t_L=10, nt=50, delta_t=1, delta_r = 5 * 10**-6,
+                       Temp_K=200, lineshape='gauss', ratio_beam=True):
+    #Returns the expected degree of saturation, according to the VDG approach,
+    # averaged over a Gaussian beam profile over the field-of-view of the
+    # telescope.
+    
+    #In order to avoid coverage issues, the parameter delta_r is adjusted so
+    # that the field-of-view of the instrument is covered by an integer number
+    # of equal-width bins.
+    
+    r_max = alpha_T/2.
+    n_r = int(r_max / delta_r)+1
+    delta_r_adjusted = r_max / n_r
+    
+    Omega = np.pi / 4 * alpha_L**2
+    
+    r = np.arange(delta_r_adjusted/2, r_max, delta_r_adjusted)
+
+    sats = np.zeros((2,len(r)))
+    beam = N_L * gauss_1D(alpha_L, r)
+    
+    for i in range(len(r)):
+        sats[:,i] = get_saturation_uncorrected(nu_L, Delta_nu_L, beam[i], z, alpha_L,
+                                   T_atm, t_L, nt, delta_t, Temp_K, lineshape,
+                                   ratio=False)
+    
+    #If ratio_beam == True, the degree of saturation is returned. If 
+    # ratio_beam != True, the total number of emitted photons in the 
+    # case with saturation and without saturation are returned individually
+    
+    if ratio_beam:
+        return 1 - np.sum(sats[0,:] * r) / np.sum(sats[1,:] * r)
+    else:
+        return np.sum(sats[0,:] * r)/Omega, np.sum(sats[1,:] * r)/Omega    
+    
 def get_wind_and_temp_errors(Temp_K, nu_Ls, Delta_nu_L, N_L, z, T_atm,
                              alpha_L, alpha_T, t_L=10, nt=50, delta_t=1,
                              delta_r=1e-5, lineshape='gauss', noise=False):
@@ -400,6 +587,39 @@ def get_wind_and_temp_errors(Temp_K, nu_Ls, Delta_nu_L, N_L, z, T_atm,
     
     return res_sat, res_no_sat, Ps
   
+def get_wind_and_temp_errors_uncorrected(Temp_K, nu_Ls, Delta_nu_L, N_L, z,
+                             T_atm, alpha_L, alpha_T, t_L=10, nt=50, delta_t=1,
+                             delta_r=1e-5, lineshape='gauss', noise=False):
+    #Determines the retrieved spectrum, with and without saturation, at the
+    # given measurement frequencies. Fits a spectrum based on the measurements
+    # in each case, and returns the fit parameters (amplitude, temperature,
+    # and LOS wind speed)
+    
+    Ps = np.zeros((2,len(nu_Ls)))
+    norm = get_total_scattering_cross_section(Temp_K, 0)
+    
+    for i in range(len(nu_Ls)):
+        nu_L = nu_Ls[i]
+        Ps[:,i] = get_saturation_beam_uncorrected(nu_L, Delta_nu_L, N_L, z,
+                                      T_atm, alpha_L, alpha_T, t_L, nt, delta_t,
+                                      delta_r, Temp_K, lineshape, False)
+    if noise:
+        noise_sat = Ps[0,:] / 100.
+        noise_no_sat = Ps[1,:] / 100.
+    else:
+        noise_sat = np.ones(len(nu_Ls))
+        noise_no_sat = np.ones(len(nu_Ls))
+        
+    p = np.array([np.max(Ps)/norm, Temp_K, 1])
+    res_sat = opt.leastsq(fit_wind_and_temp, p,
+                          args=(nu_Ls, Ps[0,:], noise_sat, Delta_nu_L,
+                                lineshape), full_output=1)
+    res_no_sat = opt.leastsq(fit_wind_and_temp, p,
+                             args=(nu_Ls, Ps[1,:], noise_no_sat, Delta_nu_L,
+                                   lineshape), full_output=1)
+    
+    return res_sat, res_no_sat, Ps
+  
 def get_lidar_res(lineshape, Delta_nu_L = 20e6):
     #Data analysis for the potassium lidar data. The data are filtered, 
     # background-subtracted, and normalized, then binned in time and
@@ -408,7 +628,7 @@ def get_lidar_res(lineshape, Delta_nu_L = 20e6):
     # noise, and the residuals of that fit are returned, along with the average
     # temperature over the potassium layer.
     
-    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
+    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data 2')
     fnames = os.listdir(obs_path)
   
     Res_array = []
@@ -544,7 +764,7 @@ def get_lidar_count_profiles(n=2):
     #Returns normalized lidar count profiles, filtered by Rayleigh signal and 
     # background strength, separated into wavelength bins.
 
-    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data')
+    obs_path = os.path.join(os.path.dirname(os.getcwd()), 'K-Lidar Data 2')
     fnames = os.listdir(obs_path)
 
     fname = os.path.join(obs_path, fnames[n])
