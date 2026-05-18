@@ -19,20 +19,24 @@ matplotlib.rc('font', **font)
       
 outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 
-Data_Fig_a = np.loadtxt(os.path.join(outpath, 'Na_saturation_SI.txt'),
+Data_Na_saturation_fname = os.path.join(outpath, 'Figure Data',
+                                     'Na_saturation_SI.txt')
+Data_Na_saturation = np.loadtxt(Data_He_saturation_fname,
            delimiter=',').T
-Data_Fig_b = np.loadtxt(os.path.join(outpath, 'Na_temp_and_wind_biases_SI.txt'),
+Data_Na_biases_fname = os.path.join(outpath, 'Figure Data',
+                                     'Na_temp_and_wind_biases_SI.txt')
+Data_Na_biases = np.loadtxt(Data_He_biases_fname,
            delimiter=',').T
           
-nu_Ls = Data_Fig_a[0]
-sats_vdG_corr = Data_Fig_a[1]
-sats_vdG_uncorr = Data_Fig_a[2]
-sats_Megie = Data_Fig_a[3]
+nu_Ls = Data_Na_saturation[0]
+sats_vdG_corr = Data_Na_saturation[1]
+sats_vdG_uncorr = Data_Na_saturation[2]
+sats_Megie = Data_Na_saturation[3]
 
-u_0s = Data_Fig_b[0]
-dens_err = Data_Fig_b[1]
-T_err = Data_Fig_b[2]
-w_err = Data_Fig_b[3]
+u_0s = Data_Na_biases[0]
+dens_err = Data_Na_biases[1]
+T_err = Data_Na_biases[2]
+w_err = Data_Na_biases[3]
 
 E_pulse = 20 #mJ
 z = 90000 #m
