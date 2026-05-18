@@ -179,7 +179,7 @@ ax[0].plot(lambda_Ls*1e12, 100*sats_Megie_nuL)
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
 ax[0].set_xlabel('Wavelength offset (pm)')
-ax[0].set_ylim(-4,87)
+ax[0].set_ylim(-4,83)
 ax[0].grid(True)
 
 ax[1].text(.51,.93, '(b)', transform=plt.gcf().transFigure)
