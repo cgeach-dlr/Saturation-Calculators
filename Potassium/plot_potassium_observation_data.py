@@ -18,7 +18,7 @@ outpath = os.path.join(os.path.dirname(os.getcwd()), 'Output')
 Data_K_profile_fname = os.path.join(outpath, 'Figure Data', 'K_profile.txt')
 Data_K_shots_fname = os.path.join(outpath, 'Figure Data', 'K_shots.txt')
 Data_K_profile = np.loadtxt(Data_K_profile_fname, delimiter=',').T
-Data_K_shots = np.loadtxt(Data_K_profile_fname, delimiter=',').T
+Data_K_shots = np.loadtxt(Data_K_shots_fname, delimiter=',').T
 
 altitudes = Data_K_profile[0]
 lidar_profile1 = Data_K_profile[1]
