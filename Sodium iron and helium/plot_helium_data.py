@@ -52,7 +52,7 @@ ax[0].plot(nu_Ls, sats_Megie_nu_Ls,
 ax[0].text(.06,.92, '(a)', transform=plt.gcf().transFigure)
 ax[0].set_ylabel('Saturation percent')
 ax[0].set_xlabel('Laser frequency offset (GHz)')
-ax[0].set_ylim(-1,19)
+ax[0].set_ylim(-1,34)
 ax[0].legend()
 ax[0].grid(True)
 
