@@ -60,6 +60,8 @@ for i in range(len(Delta_nu_Ls)):
 
 nu_Ls = (np.arange(301) - 150)*2e7
 sats_vdG_nu_Ls = np.zeros(len(nu_Ls))
+sats_Megie_nu_Ls = np.zeros(len(nu_Ls))
+sats_Megie_nu_Ls2 = np.zeros(len(nu_Ls))
 
 Delta_nu_L = 1.5e8
 
@@ -67,13 +69,6 @@ for i in range(len(nu_Ls)):
     nu_L = nu_Ls[i]    
     sats_vdG_nu_Ls[i] = sat_lib.get_saturation(nu_L, Delta_nu_L, N_L, z,  alpha_L,
                   T_atm, t_L, nt, delta_t, Temp_layer, ratio=True)
-    
-nu_Ls_Megie = (np.arange(301) - 150)*2e7
-sats_Megie_nu_Ls = np.zeros(len(nu_Ls_Megie))
-sats_Megie_nu_Ls2 = np.zeros(len(nu_Ls_Megie))
-
-for i in range(len(nu_Ls_Megie)):
-    nu_L = nu_Ls_Megie[i]
     g_L = sat_lib.g_L_gauss(nu_L, Delta_nu_L)
     sigma_eff = np.sum(g_L * absorption_spectrum) / np.sum(g_L)
     sigma_eff2 = np.sum(g_L * Doppler_spectrum) / np.sum(g_L)
@@ -107,7 +102,3 @@ ax[1].set_xlabel('Laser frequency offset (GHz)')
 ax[1].grid(True)
 
 plt.savefig(os.path.join(outpath, 'Simple.pdf'), dpi=300)
-
-
-
-
